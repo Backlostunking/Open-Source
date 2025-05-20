@@ -340,8 +340,8 @@ if Char and Char ~= nil and Root then
 local gun = Workspace:FindFirstChild("GunDrop",true)
 if gun then
 if firetouchinterest then
-firetouchinterest(Root, gun, 0) --> 0 = touch
-firetouchinterest(Root, gun, 1) --> 1 = stop touch
+firetouchinterest(Root, gun, 0)
+firetouchinterest(Root, gun, 1)
 else
 gun.CFrame = Root.CFrame
 end
@@ -391,23 +391,23 @@ end
   	end    
 })
 local function getMurdererTarget()
-	local data = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
-	for plr, plrData in pairs(data) do
-		if plrData.Role == "Murderer" then
-			local player = Players:FindFirstChild(plr)
-			if player then
-				if player == LocalPlayer then return nil, true end
-				local char = player.Character
-				if char then
-				local hrp = char:FindFirstChild("HumanoidRootPart")
-				if hrp then return hrp.Position, false end
-                   local head = char:FindFirstChild("Head")
-				if head then return head.Position, false end
-				end
-			end
-		end
-	end
-	return nil, false
+local data = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+for plr, plrData in pairs(data) do
+if plrData.Role == "Murderer" then
+local player = Players:FindFirstChild(plr)
+if player then
+if player == LocalPlayer then return nil, true end
+local char = player.Character
+if char then
+local hrp = char:FindFirstChild("HumanoidRootPart")
+if hrp then return hrp.Position, false end
+local head = char:FindFirstChild("Head")
+if head then return head.Position, false end
+end
+end
+end
+end
+return nil, false
 end
 MainTab:AddToggle({
 	Name = "Shoot Murder Button",
@@ -517,21 +517,10 @@ check()
 end
 env.enabledGunBot = Value
 local connection
-local function watchToolDestroy(tool)
-	tool.AncestryChanged:Connect(function()
-		if not tool:IsDescendantOf(game) then
-			if connection then
-				connection:Disconnect()
-				connection = nil
-			end
-		end
-	end)
-end
 local function setupGunBot(character)
      if not character then return end
 	local gun = character:FindFirstChild("Gun")
 	if not gun then return end
-     watchToolDestroy(gun)
      local knifeScript = gun:FindFirstChild("KnifeLocal")
 	if not knifeScript then return end
      local cb = knifeScript:FindFirstChild("CreateBeam")
@@ -623,26 +612,21 @@ MainTab:AddToggle({
 	Default = false,
 	Callback = function(Value)
 env.isTouchfling = Value
- local vel, movel = nil, 0.1
--- credit to X
-	 while env.isTouchfling do
-   RunService.Heartbeat:Wait()
-	 if env.isTouchfling then
-	       	 if env.isTouchfling then
-					 vel = Root.Velocity
-				 Root.Velocity = vel * 9e8 + Vector3.new(0, 9e8, 0)
-				 RunService.RenderStepped:Wait()
-				 if Char and Char.Parent and Root and Root.Parent then
-					 Root.Velocity = vel
-				end
-			 RunService.Stepped:Wait()
-			if Char and Char.Parent and Root and Root.Parent then
-			 Root.Velocity = vel + Vector3.new(0, movel, 0)
-			 movel = movel * -1
-			 end
-		 end
-	 end
- end
+local vel, movel = nil, 0.1
+while env.isTouchfling do
+RunService.Heartbeat:Wait()
+vel = Root.Velocity
+Root.Velocity = vel * 9e8 + Vector3.new(0, 9e8, 0)
+RunService.RenderStepped:Wait()
+if Char and Char.Parent and Root and Root.Parent then
+Root.Velocity = vel
+end
+RunService.Stepped:Wait()
+if Char and Char.Parent and Root and Root.Parent then
+Root.Velocity = vel + Vector3.new(0, movel, 0)
+movel = movel * -1
+end
+end
 end
 })
 MainTab:AddToggle({
@@ -837,9 +821,9 @@ PlayerTab:AddSlider({
     ValueName = "WalkSpeed",
     Callback = function(Value)
 if Char and Char ~= nil and Hum then
- Hum.WalkSpeed = Value or 16
+Hum.WalkSpeed = Value or 16
 end
-        env.Walkspeed = Value or 16
+env.Walkspeed = Value or 16
     end    
 })
 PlayerTab:AddTextbox({
@@ -850,15 +834,15 @@ PlayerTab:AddTextbox({
 if Char and Char ~= nil and Hum then
 Hum.WalkSpeed = tonumber(Value) or 16
 end
-        env.Walkspeed = tonumber(Value) or 16
+env.Walkspeed = tonumber(Value) or 16
     end	  
 })
 PlayerTab:AddToggle({
-    Name = "Walkspeed Set Auto",
+    Name = "WalkSpeed Set Auto",
     Default = false,
     Callback = function(Value)
-        env.KeepWalkspeed = Value
-        while env.KeepWalkspeed do
+env.KeepWalkspeed = Value
+while env.KeepWalkspeed do
 if Char and Char ~= nil and Hum then
       if Hum.WalkSpeed ~= env.Walkspeed then
         Hum.WalkSpeed = env.Walkspeed
@@ -884,7 +868,7 @@ end
     end    
 })
 PlayerTab:AddTextbox({
-    Name = "Jumppower",
+    Name = "JumpPower",
     Default = env.Jumppower or "50",
     TextDisappear = false,
     Callback = function(Value)
@@ -895,11 +879,11 @@ if Char and Char ~= nil and Hum then
     end	  
 })
 PlayerTab:AddToggle({
-    Name = "Jumppower Set Auto",
+    Name = "JumpPower Set Auto",
     Default = false,
     Callback = function(Value)
-        env.KeepJumppower = Value
-        while env.KeepJumppower do
+env.KeepJumppower = Value
+while env.KeepJumppower do
 if Char and Char ~= nil and Hum then
             if Hum.JumpPower ~= env.Jumppower then
                 Hum.JumpPower = env.Jumppower
