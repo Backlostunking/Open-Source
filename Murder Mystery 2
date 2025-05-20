@@ -183,7 +183,6 @@ MainTab:AddToggle({
 	Default = false,
 	Callback = function(Value)
 env.ESP_ENABLED = Value
-local connections = {}
 local updateLoop = nil
 local roleColors = {
     Murderer = Color3.fromRGB(255, 0, 0),
