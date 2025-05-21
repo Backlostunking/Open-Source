@@ -1,3 +1,8 @@
+--[[
+local cloneref = cloneref or loadstring(game:HttpGet("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/cloneref-TheCloneVM"))()
+local Players = cloneref(game:GetService("Players"))
+print(Players)
+]]
 -- version 1
 local cloneref = function(instance)
 	if typeof(instance) ~= "Instance" then return instance end
