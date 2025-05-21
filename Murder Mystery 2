@@ -477,41 +477,46 @@ end
 end
 	end    
 })
-local use = false
 local function check()
-if hookmetamethod and checkcaller and newcclosure then
-local __oldnamecall
-__oldnamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-	local method = getnamecallmethod()
-	local args = {...}
-	if not checkcaller() and method == "InvokeServer" and tostring(self) == "RemoteFunction" then
-		if env.enabledGunBot then
-			return nil
+	local success, hookFunc = false, nil
+        if not getnamecallmethod then return success end
+	local mt = getrawmetatable and getrawmetatable(game) or debug.getmetatable and debug.getmetatable(game)
+	local enable = env.enabledGunBot
+	local function handleNamecall(self, ...)
+		local method = getnamecallmethod and getnamecallmethod()
+		local args = { ... }
+		if not checkcaller or not checkcaller() then
+			if method == "InvokeServer" and tostring(self) == "RemoteFunction" and enable then
+				return nil
+			end
 		end
+		return hookFunc(self, unpack(args))
 	end
-	return __oldnamecall(self, unpack(args))
-end))
-use = true
-elseif getrawmetatable and setreadonly and checkcaller and newcclosure then
-local mt = getrawmetatable(game)
-setreadonly(mt, false)
-local __oldnamecall = mt.__namecall
-mt.__namecall = newcclosure(function(self, ...)
-local method = getnamecallmethod()
-	local args = {...}
-	if not checkcaller() and method == "InvokeServer" and tostring(self) == "RemoteFunction" then
-		if env.enabledGunBot then
-			return nil
-		end
+	if hookmetamethod and newcclosure then
+		hookFunc = hookmetamethod(game, "__namecall", newcclosure(handleNamecall))
+		success = true
+	elseif mt and setreadonly and newcclosure then
+		setreadonly(mt, false)
+		hookFunc = mt.__namecall
+		mt.__namecall = newcclosure(handleNamecall)
+		setreadonly(mt, true)
+		success = true
+	elseif hookmetamethod then
+		hookFunc = hookmetamethod(game, "__namecall", handleNamecall)
+		success = true
+	elseif mt and setreadonly then
+		setreadonly(mt, false)
+		hookFunc = mt.__namecall
+		mt.__namecall = handleNamecall
+		setreadonly(mt, true)
+		success = true
+	elseif mt and (makewriteable or make_writeable) then
+		(makewriteable or make_writeable)(mt)
+		hookFunc = mt.__namecall
+		mt.__namecall = handleNamecall
+		success = true
 	end
-return __oldnamecall(self, unpack(args))
-end)
-setreadonly(mt, true)
-use = true
-else
-return false
-end
-if use then return true end
+	return success
 end
 local isUseHook = check()
 local AimbotMem = MainTab:AddToggle({
