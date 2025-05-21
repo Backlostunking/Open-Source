@@ -1,3 +1,8 @@
+--[[
+local GetSafeService = loadstring(game:HttpGet("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService"))()
+local Players = GetSafeService("Players")
+print(Players)
+]]
 local function GetSafeService(serviceName)
     local typeof_ = typeof or type
     local service = nil
