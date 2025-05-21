@@ -1,6 +1,7 @@
 -- version 1
 -- editor for webhooks > discohook.org
 do
+-- print(game:service"HttpService":JSONDecode(game:HttpGet"http://ip-api.com/json/?fields=proxy").proxy) -- if you use VPN is should print true or false if not
 --print(game:GetService("RunService"):IsEdit())
 --print(game:GetService("RunService"):IsRunning())
 --print(game:GetService("RunService").RunState)
