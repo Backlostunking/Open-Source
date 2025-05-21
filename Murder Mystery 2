@@ -479,13 +479,13 @@ end
 })
 local function check()
 	local success, hookFunc = false, nil
-        if not getnamecallmethod then return success end
+        if not getnamecallmethod or not checkcaller then return success end
 	local mt = getrawmetatable and getrawmetatable(game) or debug.getmetatable and debug.getmetatable(game)
-	local enable = env.enabledGunBot
+	local enable = env.enabledGunBot or false
 	local function handleNamecall(self, ...)
 		local method = getnamecallmethod and getnamecallmethod()
-		local args = { ... }
-		if not checkcaller or not checkcaller() then
+		local args = {...}
+		if not checkcaller() then
 			if method == "InvokeServer" and tostring(self) == "RemoteFunction" and enable then
 				return nil
 			end
