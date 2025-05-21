@@ -1,0 +1,28 @@
+local function GetSafeService(serviceName)
+    local typeof_ = typeof or type
+    local service = nil
+    if not typeof_ or typeof_(serviceName) ~= "string" then return nil end
+    if typeof_(game.FindService) == "function" then
+        local s, r = pcall(game.FindService, game, serviceName)
+        if s and r then service = r end
+    end
+    if not service and typeof_(game.GetService) == "function" then
+        local s, r = pcall(game.GetService, game, serviceName)
+        if s and r then service = r end
+    end
+    if not service and typeof_(game.FindFirstChild) == "function" then
+        local s, r = pcall(game.FindFirstChild, game, serviceName)
+        if s and r then service = r end
+    end
+    if not service then
+        local s, r = pcall(function()
+            return game[serviceName]
+        end)
+        if s and r then service = r end
+    end
+    if service and cloneref then
+        return cloneref(service)
+    end
+    return service
+end
+return GetSafeService
