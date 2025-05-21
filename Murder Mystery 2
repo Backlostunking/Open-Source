@@ -87,13 +87,18 @@ local Window = OrionLib:MakeWindow({IntroText = "Script Made By ScripterMrbacon"
 local MainTab = Window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 local PlayerTab = Window:MakeTab({Name = "Local", Icon = "rbxassetid://4335489011", PremiumOnly = false})
 local env = getgenv and getgenv() or getrenv and getrenv() or getfenv and getfenv(0) or _G
-local cloneref = cloneref or function(s) return s end
+local cloneref = cloneref or (function()
+local s, func = pcall(function()
+return loadstring(game:HttpGet("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/cloneref-TheCloneVM"))()
+end)
+return s and func or function(s) return s end
+end)()
 local Players = cloneref(game:GetService("Players"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 local Tween = cloneref(game:GetService("TweenService"))
 local RunService = cloneref(game:GetService("RunService"))
 local Workspace = cloneref(game:GetService("Workspace"))
-local LocalPlayer = Players.LocalPlayer or Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+local LocalPlayer = Players.LocalPlayer or Players:GetPropertyChangedSignal("LocalPlayer"):Wait() -- should clone this localplayer method if the game have anticlient modified
 local backpack = LocalPlayer:FindFirstChild("Backpack") or LocalPlayer:WaitForChild("Backpack")
 local Char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait() --and LocalPlayer.CharacterAppearanceLoaded:Wait()
 local Hum = Char and Char:FindFirstChildWhichIsA("Humanoid")
