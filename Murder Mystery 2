@@ -479,7 +479,6 @@ end
 })
 local use = false
 local function check()
-if use then return end
 if hookmetamethod and checkcaller and newcclosure then
 local __oldnamecall
 __oldnamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
@@ -509,65 +508,72 @@ return __oldnamecall(self, unpack(args))
 end)
 setreadonly(mt, true)
 use = true
+else
+return false
 end
-use = false
+if use then return true end
 end
-AimbotMem = MainTab:AddToggle({
+local isUseHook = check()
+local AimbotMem = MainTab:AddToggle({
 	Name = "Gun Aimbot",
 	Default = false,
 	Callback = function(Value)
--- this code is so shit so ignore it
-if not use then
-check()
-end
+if isUseHook then
 env.enabledGunBot = Value
-local connection
+env.GunBotConnection = env.GunBotConnection or {}
 local function setupGunBot(character)
-     if not character then return end
+	if not character then return end
 	local gun = character:FindFirstChild("Gun")
-	if not gun then return end
-     local knifeScript = gun:FindFirstChild("KnifeLocal")
-	if not knifeScript then return end
-     local cb = knifeScript:FindFirstChild("CreateBeam")
-     if not cb then return end
-     local remote = cb:FindFirstChild("RemoteFunction")
+	if not gun then
+		if env.GunBotConnection.Connection then
+			env.GunBotConnection.Connection:Disconnect()
+			env.GunBotConnection.Connection = nil
+		end
+		return
+	end
+	local knifeScript = gun:FindFirstChild("KnifeLocal")
+	local cb = knifeScript and knifeScript:FindFirstChild("CreateBeam")
+	local remote = cb and cb:FindFirstChild("RemoteFunction")
+	if not knifeScript or not cb or not remote then return end
 	if env.enabledGunBot then
-		local targetPos, isSelf = getMurdererTarget()
-		if isSelf then return end
-         if connection then connection:Disconnect() connection = nil end
-			connection = gun.Activated:Connect(function()
-			      targetPos = (getMurdererTarget())
-				if not targetPos or not remote then return end
-		remote:InvokeServer(1, targetPos, "AH2")
-	end)
+		if env.GunBotConnection.Connection then
+			env.GunBotConnection.Connection:Disconnect()
+			env.GunBotConnection.Connection = nil
+		end
+		env.GunBotConnection.Connection = gun.Activated:Connect(function()
+			local targetPos, isSelf = getMurdererTarget()
+			if not targetPos or isSelf or not remote then return end
+			remote:InvokeServer(1, targetPos, "AH2")
+		end)
 	else
-		if connection then
-			connection:Disconnect()
-			connection = nil
+		if env.GunBotConnection.Connection then
+			env.GunBotConnection.Connection:Disconnect()
+			env.GunBotConnection.Connection = nil
 		end
 	end
 end
 while env.enabledGunBot do
-if Char and Char ~= nil and Char:FindFirstChild("Gun") then
-setupGunBot(Char)
-end
-task.wait(0.1)
+	if Char and Char:FindFirstChild("Gun") then
+		setupGunBot(Char)
+	end
+	task.wait(0.25)
 end
 if not env.enabledGunBot then
-if Char and Char ~= nil and Char:FindFirstChild("Gun") then
-setupGunBot(Char)
+	if env.GunBotConnection.Connection then
+		env.GunBotConnection.Connection:Disconnect()
+		env.GunBotConnection.Connection = nil
+	end
 end
-if connection then
-connection:Disconnect()
-connection = nil
+else
+if not env.AsChange then return end
+if env.AsChange.Value then
+env.AsChange:Set(false)
+OrionLib:MakeNotification({Name = "Your Executor Is Not Support This Function",Content = "Sorry, use a better one",Image = "rbxassetid://7733658504",Time = 3})
 end
-end
-if not (hookmetamethod or getrawmetatable or setreadonly or newcclosure or checkcaller) then
-AimbotMem:Set(false)
-OrionLib:MakeNotification({Name = "Your Executor Are Not support to use this function",Content = "Sorry",Image = "rbxassetid://7733658504",Time = 2})
 end
 	end    
 })
+env.AsChange = AimbotMem
 MainTab:AddToggle({
 	Name = "Seconds Life",
 	Default = false,
