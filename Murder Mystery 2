@@ -760,26 +760,29 @@ MainTab:AddButton({
 	Name = "Fling Murderer",
 	Callback = function()
 local Murderer = nil
-for _, p in pairs(Players:GetPlayers()) do
-if getRoles()[p.Name] == "Murderer" then Murderer = p break end
+for plr, role in getRoles() do
+if role == "Murderer" then
+Murderer = Players:FindFirstChild(plr)
+break
 end
-local targetPlayer = Murderer
-if targetPlayer and targetPlayer ~= LocalPlayer then
-    SHubFling(targetPlayer)
+end
+if Murderer and Murderer ~= LocalPlayer then
+    SHubFling(Murderer)
 end
 	end    
 })
 MainTab:AddButton({
 	Name = "Fling Sheriff/Hero",
 	Callback = function()
-local whog = nil
-for _, p in pairs(Players:GetPlayers()) do
-local role = getRoles()[p.Name]
-if role == "Sheriff" or role == "Hero" then whog = p break end
+local Target = nil
+for plr, role in getRoles() do
+if role == "Sheriff" or role == "Hero" then
+Target = Players:FindFirstChild(plr)
+break
 end
-local targetPlayer = whog
-if targetPlayer and targetPlayer ~= LocalPlayer then
-    SHubFling(targetPlayer)
+end
+if Target and Target ~= LocalPlayer then
+    SHubFling(Target)
 end
 	end    
 })
@@ -811,8 +814,7 @@ MainTab:AddButton({
 	Name = "Fling Select Player",
 	Callback = function()
 if TargetPlayer then
-local targetPlayer = Players:FindFirstChild(TargetPlayer)
-if targetPlayer and targetPlayer ~= LocalPlayer then
+if Players:FindFirstChild(TargetPlayer) ~= LocalPlayer then
     SHubFling(targetPlayer)
 end
 end
