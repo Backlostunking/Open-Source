@@ -814,8 +814,9 @@ MainTab:AddButton({
 	Name = "Fling Select Player",
 	Callback = function()
 if TargetPlayer then
-if Players:FindFirstChild(TargetPlayer) ~= LocalPlayer then
-    SHubFling(targetPlayer)
+local get = Players:FindFirstChild(TargetPlayer)
+if get ~= LocalPlayer then
+    SHubFling(get)
 end
 end
 	end    
