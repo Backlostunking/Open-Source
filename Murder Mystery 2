@@ -815,7 +815,7 @@ MainTab:AddButton({
 	Callback = function()
 if TargetPlayer then
 local get = Players:FindFirstChild(TargetPlayer)
-if get ~= LocalPlayer then
+if get and get ~= LocalPlayer then
     SHubFling(get)
 end
 end
