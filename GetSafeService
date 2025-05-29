@@ -3,7 +3,7 @@ local GetSafeService = loadstring(game:HttpGet("https://raw.githubusercontent.co
 local Players = GetSafeService("Players")
 print(Players)
 ]]
-local function GetSafeService(serviceName)
+local function GetSafeService(serviceName, isdo)
     local typeof_ = typeof or type
     local service = nil
     if not typeof_ or typeof_(serviceName) ~= "string" then return nil end
@@ -25,7 +25,8 @@ local function GetSafeService(serviceName)
         end)
         if s and r then service = r end
     end
-    if service and cloneref then
+    if not isdo then isdo = false end
+    if service and cloneref and isdo then
         return cloneref(service)
     end
     return service
