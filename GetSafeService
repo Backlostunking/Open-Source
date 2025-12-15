@@ -4,13 +4,13 @@ local Players = GetSafeService("Players", true) -- enable cloneref if wanted.
 print(Players)
 ]]
 -- Version 1.4.1 [ WIP ]
-local request, ExecuteRawStringHttp, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity), (getidentity or getthreadidentity)
+local request, ExecuteRawStringHttp, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
 local cloneref = cloneref or (function()
 local s, func = pcall(function()
 local ReqHttp = "https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/cloneref-TheCloneVM"
 if (game.HttpGet) then return ExecuteRawStringHttp(game:HttpGet(ReqHttp))()
-elseif (game.HttpGetAsync) then if (getidentity and setidentity and (getidentity() <= 5)) then setidentity(8) end return ExecuteRawStringHttp(game:HttpGetAsync(ReqHttp))()
-elseif (request) then return ExecuteRawStringHttp(request({Url = ReqHttp,Method = "GET"}).Body)()
+elseif (game.HttpGetAsync) then return ExecuteRawStringHttp(game:HttpGetAsync(ReqHttp))()
+elseif (request) then if (getidentity and setidentity and (getidentity() <= 5)) then setidentity(8) end return ExecuteRawStringHttp(request({Url = ReqHttp,Method = "GET"}).Body)()
 end
 end)
 return s and func or function(s) return s end
