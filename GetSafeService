@@ -3,45 +3,35 @@ local GetSafeService = loadstring(game:HttpGet("https://raw.githubusercontent.co
 local Players = GetSafeService("Players", true) -- enable cloneref if wanted.
 print(Players)
 ]]
--- Version 1.4.1 [ WIP ]
-local request, ExecuteRawStringHttp, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
-local cloneref = cloneref or (function()
-local s, func = pcall(function()
-local ReqHttp = "https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/cloneref-TheCloneVM"
-if (game.HttpGet) then return ExecuteRawStringHttp(game:HttpGet(ReqHttp))()
-elseif (game.HttpGetAsync) then return ExecuteRawStringHttp(game:HttpGetAsync(ReqHttp))()
-elseif (request) then if (getidentity and setidentity and (getidentity() <= 5)) then setidentity(8) end return ExecuteRawStringHttp(request({Url = ReqHttp,Method = "GET"}).Body)()
-end
-end)
-return s and func or function(s) return s end
-end)()
+-- Version 1.4.2
 function GetSafeService(serviceName, isUsingCRef)
 local s, rs = pcall(function()
+    local Ugc = game or Game
     local service = nil
     local typeof_ = typeof or type
-    if not service and typeof_(game.GetService) == "function" then
-        local s, r = pcall(game.GetService, game, serviceName)
+    if not service and typeof_(Ugc.GetService) == "function" then
+        local s, r = pcall(Ugc.GetService, Ugc, serviceName)
         if s and r then service = r end
     end
-    if not service and typeof_(game.FindService) == "function" then
-        local s, r = pcall(game.FindService, game, serviceName)
+    if not service and typeof_(Ugc.FindService) == "function" then
+        local s, r = pcall(Ugc.FindService, Ugc, serviceName)
         if s and r then service = r end
     end
-    if not service and typeof_(game.service) == "function" then
-        local s, r = pcall(game.service, game, serviceName)
+    if not service and typeof_(Ugc.service) == "function" then
+        local s, r = pcall(Ugc.service, Ugc, serviceName)
         if s and r then service = r end
     end
-    if not service and typeof_(game.FindFirstChild) == "function" then
-        local s, r = pcall(game.FindFirstChild, game, serviceName)
+    if not service and typeof_(Ugc.FindFirstChild) == "function" then
+        local s, r = pcall(Ugc.FindFirstChild, Ugc, serviceName)
         if s and r then service = r end
     end
     if not service then
         local s, r = pcall(function()
-            return game[serviceName]
+            return Ugc[serviceName]
         end)
         if s and r then service = r end
     end
-    if service and cloneref and isUsingCRef then
+    if service and cloneref and typeof_(cloneref) == "function" and isUsingCRef then
         return cloneref(service)
     end
    return service
