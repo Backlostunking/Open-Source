@@ -28,7 +28,7 @@ local s: boolean = pcall(function()
 end)
 if not s then repeat task.wait() until ugc:IsLoaded() end
 end
-local this = {Version = '1.0.9'}
+local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
 local request, ExecuteRawStringHttp, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
 -- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later..
@@ -701,6 +701,8 @@ local map = GetCurrentMap()
 local RemoteEvent = SReplicatedStorage:FindFirstChild("RemoteEvent")
 local Stats_LP = LP:FindFirstChild("TempPlayerStatsModule")
 local Local_H = Stats_LP and Stats_LP:FindFirstChild("Health")
+local Local_R = Stats_LP and Stats_LP:FindFirstChild("Ragdoll")
+local Local_C = Stats_LP and Stats_LP:FindFirstChild("Captured")
 local function CapturedFreezePod(cmap)
     if not (cmap and type(cmap) == 'table') then return end
     for _, o in pairs(cmap) do
@@ -709,7 +711,7 @@ local function CapturedFreezePod(cmap)
         if PodTrigger then
             local CapturedTorso = PodTrigger:FindFirstChild("CapturedTorso")
             local Event = PodTrigger:FindFirstChild("Event")
-            if CapturedTorso and Event and CapturedTorso.Value then
+            if CapturedTorso and Event and CapturedTorso:IsA("ObjectValue") and CapturedTorso.Value then
                 return Event
             end
         end
@@ -717,7 +719,8 @@ local function CapturedFreezePod(cmap)
 end
 -- comment by fxengif : DAYYYMNNN sheee is cookingggg!!!
 while Genv.SHubToggle.AutoHelpCP_silent and task.wait(0.05) do
-    if not Local_H or (Local_H and Local_H.Value <= 0) then continue end
+    if not (Local_H and Local_R and Local_C) then continue end
+    if Local_H.Value <= 0 or Local_R.Value or Local_C.Value then continue end
     if not RemoteEvent then
         RemoteEvent = SReplicatedStorage:FindFirstChild("RemoteEvent")
         continue
@@ -969,11 +972,10 @@ Genv.SHubToggle.AntiRagdoll=Value
     LPH:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, bool)
     LPH:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, bool)
  end
- if not Value then ChangeR(true) end
  local Stats = LP:FindFirstChild("TempPlayerStatsModule")
  while Genv.SHubToggle.AntiRagdoll and task.wait() do
    pcall(function()
-        ChangeR(false)
+        ChangeR(not Genv.SHubToggle.AntiRagdoll)
         if not Stats then Stats = LP:FindFirstChild("TempPlayerStatsModule") return end
        local Ragdoll = Stats:FindFirstChild("Ragdoll")
        if Ragdoll and (Ragdoll:IsA("BoolValue") and Ragdoll.Value) then
@@ -1026,7 +1028,7 @@ SFTab.Game_Rg:AddSection("Ragebaiting Beast")
 local function GetCurrentBeastHEvent(needed)
     for _, p in pairs(SPlayers:GetPlayers()) do
         if p ~= LP and p.Character then
-        local c = p.Character
+            local c = p.Character
             if c:FindFirstChild "Hammer" then
                 return not needed and c:FindFirstChild("HammerEvent", true) or c
             end
