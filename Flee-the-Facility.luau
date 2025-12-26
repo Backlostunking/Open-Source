@@ -295,7 +295,7 @@ SFTab.Main:AddSection("ESP")
 SFTab.Main:AddToggle("EspToggle", {Title = "Esp Player", Description = "Enable/Disable Esp Player", Default = false, Callback = function(Value)
 --> created by Artsynia <--
 Genv.SHubToggle.PEspEnable = Value
-local updateLoop = nil
+local espConnection
 local roleColors = {
     Beast = Color3.fromRGB(255, 0, 0),
     Survival_Captured = Color3.fromRGB(0, 0, 255),
@@ -368,13 +368,15 @@ local function updateESP()
     end
 end
 local function startESP()
-    if updateLoop then return end
-    updateLoop = task.spawn(function()
-        while Genv.SHubToggle.PEspEnable and task.wait() do
-            pcall(updateESP)
+    if espConnection then return end
+    espConnection = SRunService.RenderStepped:Connect(function()
+        if not Genv.SHubToggle.PEspEnable then
+            clearESP()
+            espConnection:Disconnect()
+            espConnection = nil
+            return
         end
-        clearESP()
-        updateLoop = nil
+        pcall(updateESP)
     end)
 end
 if Genv.SHubToggle.PEspEnable then
@@ -386,7 +388,7 @@ end})
 SFTab.Main:AddToggle("EspComputerToggle", {Title = "Esp Computer", Description = "Enable/Disable Esp Computer", Default = false, Callback = function(Value)
 --> created by Artsynia <--
 Genv.SHubToggle.PCCEspEnable = Value
-local updateLoop = nil
+local espConnection
 local espContainer = getSafeParent("Computer")
 local function clearESP()
     for _, child in pairs(espContainer:GetChildren()) do
@@ -446,13 +448,15 @@ local function updateESP()
    end
 end
 local function startESP()
-    if updateLoop then return end
-    updateLoop = task.spawn(function()
-        while Genv.SHubToggle.PCCEspEnable and task.wait() do
-            pcall(updateESP)
+    if espConnection then return end
+    espConnection = SRunService.RenderStepped:Connect(function()
+        if not Genv.SHubToggle.PCCEspEnable then
+            clearESP()
+            espConnection:Disconnect()
+            espConnection = nil
+            return
         end
-        clearESP()
-        updateLoop = nil
+        pcall(updateESP)
     end)
 end
 if Genv.SHubToggle.PCCEspEnable then
@@ -465,7 +469,7 @@ SFTab.Main:AddToggle("EspFreezePodToggle", {Title = "Esp FreezePod", Description
 --> created by fxengif <--
 -- comment by fxengif : ima try to do it after 6 months
 Genv.SHubToggle.FreezePodEspEnable = Value
-local updateLoop = nil
+local espConnection
 local color = Color3.fromRGB(0, 0, 245)
 local espContainer = getSafeParent("FreezePod")
 local function clearESP()
@@ -518,13 +522,15 @@ local function updateESP()
    end
 end
 local function startESP()
-    if updateLoop then return end
-    updateLoop = task.spawn(function()
-        while Genv.SHubToggle.FreezePodEspEnable and task.wait() do
-            pcall(updateESP)
+    if espConnection then return end
+    espConnection = SRunService.RenderStepped:Connect(function()
+        if not Genv.SHubToggle.FreezePodEspEnable then
+            clearESP()
+            espConnection:Disconnect()
+            espConnection = nil
+            return
         end
-        clearESP()
-        updateLoop = nil
+        pcall(updateESP)
     end)
 end
 if Genv.SHubToggle.FreezePodEspEnable then
@@ -536,7 +542,7 @@ end})
 SFTab.Main:AddToggle("EspExitDoorToggle", {Title = "Esp ExitDoor", Description = "Enable/Disable Esp ExitDoor", Default = false, Callback = function(Value)
 --> created by fxengif <--
 Genv.SHubToggle.ExitDoorEspEnable = Value
-local updateLoop = nil
+local espConnection
 local espContainer = getSafeParent("ExitDoor")
 local function clearESP()
     for _, child in pairs(espContainer:GetChildren()) do
@@ -595,13 +601,15 @@ local function updateESP()
    end
 end
 local function startESP()
-    if updateLoop then return end
-    updateLoop = task.spawn(function()
-        while Genv.SHubToggle.ExitDoorEspEnable and task.wait() do
-            pcall(updateESP)
+    if espConnection then return end
+    espConnection = SRunService.RenderStepped:Connect(function()
+        if not Genv.SHubToggle.ExitDoorEspEnable then
+            clearESP()
+            espConnection:Disconnect()
+            espConnection = nil
+            return
         end
-        clearESP()
-        updateLoop = nil
+        pcall(updateESP)
     end)
 end
 if Genv.SHubToggle.ExitDoorEspEnable then
@@ -1017,7 +1025,7 @@ GameStatus_Pg = SFTab.Game_Rg:CreateParagraph("GameStatus_Paragraph", {Title = "
 RefreshStatus()
 This:OnChanged(function(Value)
  Genv.SHubToggle.AutoReStatus = Value
- while Genv.SHubToggle.AutoReStatus and task.wait(.1) do task.spawn(RefreshStatus) end
+ while Genv.SHubToggle.AutoReStatus and task.wait(.1) do RefreshStatus() end
 end)
 end --// 
 -- // <𝟹 \\ --
