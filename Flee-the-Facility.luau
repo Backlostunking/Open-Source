@@ -287,6 +287,10 @@ local function createBillboard(part: any, IDorN: string, ESPContainer: any): ()
     ArrowLabel.TextScaled = true
     ArrowLabel.Rotation = 180
 end
+-- // this function created by Artsynia \\ --
+local function GetESPId(inst: any?): any?
+    return `ESP_{inst:GetDebugId()}`
+end
 SFTab.Main:AddSection("ESP")
 SFTab.Main:AddToggle("EspToggle", {Title = "Esp Player", Description = "Enable/Disable Esp Player", Default = false, Callback = function(Value)
 --> created by Artsynia <--
@@ -406,13 +410,13 @@ end
 local function updateESP()
     local map = GetCurrentMap()
     if not map then clearESP() return end
-    for d, o in pairs(map:GetChildren()) do
+    for _, o in pairs(map:GetChildren()) do
         if o.Name == "ComputerTable" then
         local part = o:FindFirstChildWhichIsA("BasePart")
         if not part then continue end
         local screen = o:FindFirstChild("Screen")
         local espColor = GetComputerColor(screen)
-        local id = t_str(d..o.Name)
+        local id = GetESPId(o)
         local espGui = espContainer:FindFirstChild(id)
         if not espGui then
             createBillboard(o, id, espContainer)
@@ -480,11 +484,11 @@ end
 local function updateESP()
     local map = GetCurrentMap()
     if not map then clearESP() return end
-    for d, o in pairs(map:GetChildren()) do
+    for _, o in pairs(map:GetChildren()) do
         if o.Name == "FreezePod" then
         local part = o:FindFirstChildWhichIsA("BasePart")
         if not part then continue end
-        local id = t_str(d..o.Name)
+        local id = GetESPId(o)
         local espGui = espContainer:FindFirstChild(id)
         if not espGui then
             createBillboard(o, id, espContainer)
@@ -556,12 +560,12 @@ end
 local function updateESP()
     local map = GetCurrentMap()
     if not map then clearESP() return end
-    for d, o in pairs(map:GetChildren()) do
+    for _, o in pairs(map:GetChildren()) do
         if o.Name == "ExitDoor" then
         local part = o:FindFirstChildWhichIsA("BasePart")
         if not part then continue end
         local color = FindColor(o:FindFirstChild("Light"))
-        local id = t_str(d..o.Name)
+        local id = GetESPId(o)
         local espGui = espContainer:FindFirstChild(id)
         if not espGui then
             createBillboard(o, id, espContainer)
