@@ -288,7 +288,7 @@ local function createBillboard(part: any, IDorN: string, ESPContainer: any): ()
     ArrowLabel.Rotation = 180
 end
 -- // this function created by Artsynia \\ --
-local function GetESPId(inst: any?): any?
+local function GetESPId(inst: any?): string
     return `ESP_{inst:GetDebugId()}`
 end
 SFTab.Main:AddSection("ESP")
@@ -797,23 +797,23 @@ end})
 SFTab.Main:AddSection("Other")
 SFTab.Main:AddToggle("AntiFlingToggle", {Title = "Anti Fling", Description = "Noclip Player", Default = false, Callback = function(Value)
  --> created by fxengif <--
- Genv.SHubToggle.AntiFling=Value
+ Genv.SHubToggle.AntiFling = Value
  local function SAntiFling()
     for _, p in pairs(SPlayers:GetPlayers()) do
         if p ~= LP and p.Character then
-                for _, v in pairs(p.Character:GetChildren()) do
-                    if v:IsA("BasePart") then
-                        if v.CanCollide ~= false then
-                            v.CanCollide = false
-                            elseif v.CanCollide ~= true and not Genv.SHubToggle.AntiFling then
-                           v.CanCollide = true
+                for _, c in pairs(p.Character:GetDescendants()) do
+                    if c:IsA "BasePart" then
+                        if c.CanCollide then
+                            c.CanCollide = false
+                        elseif not (c.CanCollide or Genv.SHubToggle.AntiFling) then
+                            c.CanCollide = true;break
                        end
                   end
              end
         end
     end
  end
-  while Genv.SHubToggle.AntiFling and task.wait() do SAntiFling() end
+  while Genv.SHubToggle.AntiFling and SRunService.Heartbeat:Wait() do SAntiFling() end
 end})
 SFTab.Main:AddToggle("TFlingToggle", {Title = "Touch Fling", Description = "let's you fling player by touching them", Default = false, Callback = function(Value)
 --> created by fxengif <--
@@ -942,15 +942,19 @@ end)
 end})
 SFTab.Local:AddToggle("NoclipToggle", {Title = "Noclip", Description = "Enable/Disable Noclip", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.Noclip=Value
+Genv.SHubToggle.Noclip = Value
  local function Noclip()
-    for _, c in pairs(LPC:GetChildren()) do
-         if c:IsA("BasePart") then
-           c.CanCollide = not Genv.SHubToggle.Noclip
-      end
-    end
+     for _, c in pairs(LPC:GetDescendants()) do 
+         if c:IsA "BasePart" then
+            if c.CanCollide then
+                 c.CanCollide = false
+             elseif not (c.CanCollide or Genv.SHubToggle.Noclip) then
+                 c.CanCollide = true;break
+             end
+         end
+     end
  end
- while Genv.SHubToggle.Noclip and task.wait() do Noclip() end
+ while Genv.SHubToggle.Noclip and SRunService.Heartbeat:Wait() do Noclip() end
 end})
 SFTab.Anti_Ify:AddToggle("NotifyAdminToggle", {Title = "Notification Admin Join", Description = "Show Notification when Mod/Admin Join This Server", Default = true}):OnChanged(function(Value)
  --> created by Artsynia <--
@@ -1146,16 +1150,21 @@ do
 SFTab.Other:AddSection("Executor Environment")
 local CurrentExc = c_caller("function", identifyexecutor or getexecutorname, true, "Error")
 local function list_ev()
-    if Genv == _G then return end
+    if Genv == _G then return nil end
     local e, re = {}, 0
     for n, a in pairs(Genv) do
         if t_str(n):lower():find("shub", 1, true) then continue end
-        re+=1;table.insert(e, ("> %d | %s • type : %s"):format(re, t_str(n), type(a)))
+        re=re+1;table.insert(e, ("> %d | %s • type : %s"):format(re, t_str(n), type(a)))
     end
-    return table.concat(e, "\n")
+    return table.concat(e, "\n"), re
 end
 local this
-local refresh = function() if this then this:SetContent(`see what your executor environment has:\n> Executor : {CurrentExc}\n\n{list_ev()}`) end end
+local function refresh()
+    if this then
+        local result, overall = list_ev()
+        this:SetContent(`see what your executor environment has:\n> Executor : {CurrentExc}\n> Overall : {overall}\n\n{result}`)
+    end
+end
 SFTab.Other:CreateButton{
     Title = "Refresh Environment",
     Description = "Refresh List env",
@@ -1187,7 +1196,7 @@ InterfaceManager:BuildInterfaceSection(SFTab.Settings)
 SaveManager:BuildConfigSection(SFTab.Settings)
 SaveManager:LoadAutoloadConfig()
 Window:SelectTab(1)
--- comment by fxengif : our toggle button for fluent UI library :pp
+-- comment by fxengif : our toggle button for fluent UI library :pp (mobile)
 if GetIsOnMobile() then
 local CurrentUi = GetHiddenGui()
 if CurrentUi:FindFirstChild "ToggleShubUi" then CurrentUi.ToggleShubUi:Destroy() end
