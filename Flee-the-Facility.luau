@@ -1,4 +1,4 @@
--- comment by fxengif : thank you guys for support!!
+-- comment by fxengif : thank you guys for support!
 
 -- comment by fxengif : it actually been 6 months as I don't making script in Roblox, sooo MY CODING SKILLS ARE DROPPED
 
@@ -7,12 +7,15 @@
 -- comment by fxengif : if you want to help us added more feature in this script then DM me on discord: @fxengif
 
 -- comment by fxengif : there actually a lot of while loop used so performance can be badly but you know it fine
+
+-- comment by fxengif : this is a quick update, sorry.. i don't have enough time...
+
 do --// FTF \\--
 --> created by fxengif <--
 local function c_caller(t, f, cf, ...)
-    return (type(f) == t and cf and f()) or ...
+    return (type(f) == t and (cf and f() or f)) or ...
 end
-local isluau_ = c_caller("boolean", isluau, true, nil)
+local isluau_ = c_caller("function", isluau, true)
 local function ReadVMVersion()
     if isluau_ then return "Luau" end -- comment by fxengif : some executor has this function in their global environment like krnl
     if _VERSION and type(_VERSION) == "string" then return _VERSION end -- comment by fxengif : in Roblox global environment variable
@@ -20,43 +23,54 @@ local function ReadVMVersion()
 end
 local VM_Version = ReadVMVersion()
 local ugc = game or Game
-if not VM_Version:lower():find('luau') and VM_Version ~= "Error" then ugc.service(ugc, 'Players').LocalPlayer:Kick('this game not supported LuaU..(this game still Using Old VM - Lua)') end
+if not VM_Version:lower():find('luau') and VM_Version ~= 'Error' then ugc.GetService(ugc, 'Players').LocalPlayer:Kick('this game not supported LuaU..(this game still Using Old VM - Lua)') end
 if not ugc:IsLoaded() then
 local s: boolean = pcall(function()
-    ugc:Load() -- comment by fxengif : force loaded if game not loaded itself.
+    ugc:Load() -- comment by fxengif : force loaded if game not loaded itself
     ugc.Loaded:Wait()
 end)
 if not s then repeat task.wait() until ugc:IsLoaded() end
 end
 local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
-local request, ExecuteRawStringHttp, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
--- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later..
-do if (getidentity and setidentity and type(getidentity()) == "number" and (getidentity() <= 5)) then setidentity(8) end end
-function RequestLoadRawHttp(RequestHttp: string): any?
-local s, sc = xpcall(function()
-if (ugc.HttpGet) then return ExecuteRawStringHttp(ugc:HttpGet(RequestHttp))() -- comment by fxengif : using executor custom HttpGet function which officially was actually known as HttpGetAsync function in ugc global.
-elseif (ugc.HttpGetAsync) then return ExecuteRawStringHttp(ugc:HttpGetAsync(RequestHttp))() -- comment by fxengif : may need a high identity so that why I set your identity to 8 (default access dent)
-elseif (request) then return ExecuteRawStringHttp(request({Url = RequestHttp, Method = "GET"}).Body)() -- comment by fxengif : final CallBack
+local request, LoadRawString, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
+-- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later.
+--> created by fxengif <--
+local function c_type(ty, v, lu)
+    local t = lu and typeof or type
+    return t(v) == ty
 end
-end, function()
-FindServiceTery"StarterGui":SetCore("SendNotification",{Title = "Error",Text = "Your exploit\ndoesn't support to using this script (identify badly)",Icon = "rbxassetid://7733701545",Duration = 4})
-return false, nil
+-- end --
+task.spawn(function()
+    if (getidentity and setidentity and c_type("number", getidentity())) and getidentity() <= 5 then
+        pcall(setidentity, 8)
+    end
 end)
-return s and sc
+function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean): any?
+    local s, sc = xpcall(function()
+        local DoLoader = Loaded and LoadRawString or function(r) return r end
+        if (ugc.HttpGet) then return DoLoader(ugc:HttpGet(RequestHttp))() -- comment by fxengif : using executor custom HttpGet function which officially was actually known as HttpGetAsync function in ugc global.
+        elseif (ugc.HttpGetAsync) then return DoLoader(ugc:HttpGetAsync(RequestHttp))() -- comment by fxengif : may need a high identity so that why I set your identity to 8 (default access dent)
+        elseif (request) then return DoLoader(request({Url = RequestHttp, Method = "GET"}).Body)() -- comment by fxengif : final CallBack
+        end
+        end, function(e)
+        if c_type("string", e) then FindServiceTery"StarterGui":SetCore("SendNotification",{Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4}) end
+        return nil
+    end)
+    return s and sc
 end
 local t_str, t_num = tostring, tonumber
 function CallValidFunc(obj, propfunc, arg)
-    if typeof(obj) ~= "Instance" then
+    if not c_type("Instance", obj, true) then
         return "Invalid object (not an Instance)"
     end
     local s, r = pcall(function()
         return obj[propfunc](obj, arg)
     end)
-    if type(r) == "boolean" then return r end
+    if c_type("boolean", r) then return r end
     return s and r or `Error: {t_str(r)}`
 end
-local GetAdvanceS = RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService") or function(s) return ugc:GetService(s) end
+local GetAdvanceS = RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService", true) or function(s) return ugc:GetService(s) end
 local SEry = setmetatable({}, {
     __index = function(se, n)
     local ref = c_caller("function", cloneref, false, function(s) return s end)
@@ -70,7 +84,7 @@ local SEry = setmetatable({}, {
 end
 })
 FindServiceTery = function(s) return SEry[s] end
-RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/ScriptStarOZX/refs/heads/main/IfXDarkNotification.Lua");local tracery_notif=createNotification;createNotification=nil
+RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/ScriptStarOZX/refs/heads/main/IfXDarkNotification.Lua", true);local tracery_notif=createNotification;createNotification=nil
 -- // this function created by Artsynia \\ --
 local function IsGame_Valid(): boolean
     local thisid = 893973440
@@ -89,13 +103,14 @@ local function IsGame_Valid(): boolean
     return s and r or ugc.PlaceId == thisid
 end
 local PInfo = CallValidFunc(FindServiceTery("MarketplaceService"), "GetProductInfo", ugc.PlaceId)
-local GameName = PInfo and type(PInfo) == "table" and PInfo.Name or "baba"
-if not IsGame_Valid() then tracery_notif(GameName, "this current game was incorrect, does we get it right?", 3.5) return end
+local GameName = c_type("table", PInfo) and PInfo.Name or "baba"
+if not IsGame_Valid() then return tracery_notif(GameName, "this current game was incorrect, does we get it right?", 3.5) end
 tracery_notif("Loading", "Please Wait...", 3.5)
 -------------------------------------------------------
-local Fluent = RequestLoadRawHttp("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau")
-local SaveManager = RequestLoadRawHttp("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau")
-local InterfaceManager = RequestLoadRawHttp("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau")
+local UiGit = "https://github.com/ActualMasterOogway/Fluent-Renewed"
+local Fluent = RequestLoadRawHttp(UiGit.."/releases/latest/download/Fluent.luau", true)
+local SaveManager = RequestLoadRawHttp(UiGit.."/blob/main/Addons/SaveManager.luau?raw=true", true)
+local InterfaceManager = RequestLoadRawHttp(UiGit.."/blob/main/Addons/InterfaceManager.luau?raw=true", true)
 local SWorkspace = FindServiceTery("Workspace")
 local SLighting = FindServiceTery("Lighting")
 local SUis = FindServiceTery("UserInputService")
@@ -113,13 +128,14 @@ function GetIsOnMobile()
     end)
     return IsOnMobile
 end
-local Genv = (getgenv and type(getgenv) == "function" and getgenv()) or (getgenv and type(getgenv) == "table" and getgenv) or _G
+local getgenv_ = c_caller("function", getgenv, true, c_caller("table", getgenv))
+local Genv = c_type("table", getgenv_) and getgenv_ or _G
 Genv.SHub = Genv.SHub or {}
 Genv.SHub.Notify = Genv.SHub.Notify or {}
 Genv.SHub.Anti = Genv.SHub.Anti or {}
 Genv.SHubToggle = Genv.SHubToggle or {}
 Genv.SHubTaskSignal = Genv.SHubTaskSignal or {}
--- // ×x \\ --
+-- // Task \\ --
 --> created by fxengif <--
 task.spawn(function()
   pcall(function()
@@ -133,15 +149,29 @@ task.spawn(function()
   -- end
   end)
 end)
--- // ×x \\ --
+-- // Task End \\ --
+local function isLocalPlayerExist()
+    local s, e = pcall(function() return SPlayers:CreateLocalPlayer() end)
+    if c_type("string", e) and e:lower():find('already exist') then
+        return true, s
+    end
+    return false, s
+end
 local LP = SPlayers.LocalPlayer or SPlayers:GetPropertyChangedSignal("LocalPlayer"):Wait()
-if not LP then pcall(function() LP=SPlayers.localPlayer end) end
+do local exists, suc = isLocalPlayerExist()
+    if not LP and exists and not suc then
+        pcall(function()
+            LP = SPlayers.localPlayer
+        end)
+    end
+end
 local LPGui = LP:FindFirstChildOfClass("PlayerGui")
 function GetHiddenGui()
     local UI
      if not UI then
-        if gethui then UI = gethui()
-        elseif SCoreGui and SCoreGui:FindFirstChild "RobloxGui" then UI = SCoreGui.RobloxGui
+        local gethui_ = c_caller("function", gethui, true)
+        if gethui_ then UI = gethui_
+        elseif SCoreGui and SCoreGui:FindFirstChild"RobloxGui" then UI = SCoreGui.RobloxGui
         elseif SCoreGui then UI = SCoreGui
         elseif LPGui then UI = LPGui end
      end
@@ -1076,7 +1106,7 @@ end})
 -------------------------------------------------------
 --> created by Artsynia <--
 do
-SFTab.Content:AddSection("for Record/Showcase | Still in Process")
+SFTab.Content:AddSection("Record/Showcase")
 local function GetCurrentUiPlrFrame(lyLv: boolean): any?
     local plrf = LPGui:FindFirstChild("PlayerNamesFrame", true)
     if not plrf then return nil end
@@ -1107,6 +1137,10 @@ local function GetCurrentUiPlrBars(): any?
     end
     return Genv.SHub.BarsTL
 end
+Genv.SHub.CustomName = ""
+SFTab.Content:AddInput("Input_CustomName", {Title = "Custom Name", Default = "", Placeholder = "", Numeric = false, Finished = false, Callback = function(str)
+Genv.SHub.CustomName = t_str(str)
+end})
 SFTab.Content:CreateToggle("EnableHide_ListName_Toggle", {Title = "Enabled Change Text Playerlist (Ui)", Description = "useful when record/showcase", Default = false, Callback = function(v) 
 Genv.SHubToggle.HideListName = v
 local name = GetCurrentUiPlrFrame()
@@ -1117,7 +1151,7 @@ local name = GetCurrentUiPlrFrame()
         if not LPGui then continue end
         name = GetCurrentUiPlrFrame()
         if name then
-            name.Text = ""
+            name.Text = Genv.SHub.CustomName
         end
  end
 end})
@@ -1131,7 +1165,7 @@ local name = GetCurrentUiPlrBars()
         if not LPGui then continue end
         name = GetCurrentUiPlrBars()
         if name then
-            name.Text = ""
+            name.Text = Genv.SHub.CustomName
         end
  end
 end})
@@ -1140,7 +1174,7 @@ end
 SFTab.v_cre:AddSection("Project")
 SFTab.v_cre:AddParagraph("Project_Paragraph", {Title = `SourceOnce - Tracery : {GameName}`, Content = `Version Beta • {this.Version}`})
 SFTab.v_cre:AddSection("Credit")
-SFTab.v_cre:AddParagraph("Credit_Paragraph", {Title = "Script • Creator", Content = "Creator of This Script: Artsynia, fxengif\n\nFluent Ui library Rewrite By: ActualMasterOogway\nhttps://github.com/ActualMasterOogway/Fluent-Renewed\n\nfeature and idea by everyone <3"})
+SFTab.v_cre:AddParagraph("Credit_Paragraph", {Title = "Script • Creator", Content = "Creator of This Script: Artsynia, fxengif\n\nFluent Ui library Rewrite By: ActualMasterOogway\n"..UiGit.."\n\nfeature and idea by everyone <3"})
 ----------------------OTHER----------------------
 SFTab.Other:AddSection("Current Game Information")
 SFTab.Other:AddParagraph("Game_Info_Paragraph", {Title = "Info", Content = `Game VM Version: {VM_Version}`})
