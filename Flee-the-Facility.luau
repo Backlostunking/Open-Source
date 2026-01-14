@@ -1,4 +1,4 @@
--- comment by fxengif : thank you guys for support!
+-- comment by fxengif : thank you guys for support!!
 
 -- comment by fxengif : it actually been 6 months as I don't making script in Roblox, sooo MY CODING SKILLS ARE DROPPED
 
@@ -8,7 +8,7 @@
 
 -- comment by fxengif : there actually a lot of while loop used so performance can be badly but you know it fine
 
--- comment by fxengif : this is a quick update, sorry.. i don't have enough time...
+-- comment by fxengif : this is a quick update, sorry. i don't have enough time.
 
 do --// FTF \\--
 --> created by fxengif <--
@@ -33,6 +33,7 @@ if not s then repeat task.wait() until ugc:IsLoaded() end
 end
 local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
+-- local newnative = c_caller("function", newcclosure, false, function(f) return f end)
 local request, LoadRawString, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
 -- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later.
 --> created by fxengif <--
@@ -71,7 +72,10 @@ function CallValidFunc(obj, propfunc, arg)
     return s and r or `Error: {t_str(r)}`
 end
 local GetAdvanceS = RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService", true) or function(s) return ugc:GetService(s) end
-local SEry = setmetatable({}, {
+local getgenv_ = c_caller("function", getgenv, true, c_caller("table", getgenv))
+local Genv = c_type("table", getgenv_) and getgenv_ or _G;Genv.SHub = Genv.SHub or {};Genv.SHub.MemoryService = Genv.SHub.MemoryService or {}
+task.spawn(function()
+local SEry = setmetatable(Genv.SHub.MemoryService, {
     __index = function(se, n)
     local ref = c_caller("function", cloneref, false, function(s) return s end)
     local s, c = pcall(function()
@@ -82,8 +86,8 @@ local SEry = setmetatable({}, {
         return c
     end
 end
-})
-FindServiceTery = function(s) return SEry[s] end
+});FindServiceTery = function(s) return SEry[s] end
+end)
 RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/ScriptStarOZX/refs/heads/main/IfXDarkNotification.Lua", true);local tracery_notif=createNotification;createNotification=nil
 -- // this function created by Artsynia \\ --
 local function IsGame_Valid(): boolean
@@ -128,22 +132,19 @@ function GetIsOnMobile()
     end)
     return IsOnMobile
 end
-local getgenv_ = c_caller("function", getgenv, true, c_caller("table", getgenv))
-local Genv = c_type("table", getgenv_) and getgenv_ or _G
-Genv.SHub = Genv.SHub or {}
 Genv.SHub.Notify = Genv.SHub.Notify or {}
 Genv.SHub.Anti = Genv.SHub.Anti or {}
-Genv.SHubToggle = Genv.SHubToggle or {}
-Genv.SHubTaskSignal = Genv.SHubTaskSignal or {}
+Genv.SHub.Toggle = Genv.SHub.Toggle or {}
+Genv.SHub.TaskSignal = Genv.SHub.TaskSignal or {}
 -- // Task \\ --
 --> created by fxengif <--
 task.spawn(function()
   pcall(function()
-   -- if table.getn(Genv.SHubTaskSignal) >= 1 then
-      for s in pairs(Genv.SHubTaskSignal) do
+   -- if table.getn(Genv.SHub.TaskSignal) >= 1 then
+      for s in pairs(Genv.SHub.TaskSignal) do
          if s then s:Disconnect() end
       end
-      --[[table.foreach(Genv.SHubTaskSignal, function(s)
+      --[[table.foreach(Genv.SHub.TaskSignal, function(s)
          if s then s:Disconnect() end
       end)]]
   -- end
@@ -151,7 +152,7 @@ task.spawn(function()
 end)
 -- // Task End \\ --
 local function isLocalPlayerExist()
-    local s, e = pcall(function() return SPlayers:CreateLocalPlayer() end)
+    local s, e = pcall(function() SPlayers:CreateLocalPlayer() end)
     if c_type("string", e) and e:lower():find('already exist') then
         return true, s
     end
@@ -187,7 +188,7 @@ if not root then root = char:FindFirstChild("HumanoidRootPart") or char:FindFirs
 return root
 end
 LPR=GetRootChar(LPC)
-Genv.SHubTaskSignal.InftyUte=LP.CharacterAdded:Connect(function(MYY)
+Genv.SHub.TaskSignal.InftyUte=LP.CharacterAdded:Connect(function(MYY)
 repeat SRunService.Heartbeat:Wait()
 LPC=MYY;LPH=LPC:FindFirstChildWhichIsA("Humanoid");LPR=GetRootChar(LPC)
 until LPC and LPH and LPR
@@ -203,11 +204,11 @@ local SFTab = {
     Other = Window:AddTab({Title = "Other", Icon = "building"}),
     Settings = Window:AddTab({Title = "Settings", Icon = "settings"})
 }
-local FOption = Fluent.Options
+-- local FOption = Fluent.Options
 do
 -- // this function created by Artsynia \\ --
 local function IsValidInstanceOf(inst: any, of: any?): boolean
-    return inst and typeof(inst) == "Instance" and inst.Parent and inst:IsDescendantOf(of or SWorkspace)
+    return c_type("Instance", inst, true) and inst.Parent and inst:IsDescendantOf(of or SWorkspace)
 end
 -- // this function created by Artsynia \\ --
 local function GetCurrentMap(): any?
@@ -242,7 +243,7 @@ local function Sround(num: number, np: number): number
 end
 -- // this function created by Artsynia \\ --
 local function ToNumV(v: any): number
-    if type(v) == "number" then return v end
+    if c_type("number", v) then return v end
     local n = t_num(v); return if n ~= nil then n else 0
 end
 -- // this function created by Artsynia \\ --
@@ -324,7 +325,7 @@ end
 SFTab.Main:AddSection("ESP")
 SFTab.Main:AddToggle("EspToggle", {Title = "Esp Player", Description = "Enable/Disable Esp Player", Default = false, Callback = function(Value)
 --> created by Artsynia <--
-Genv.SHubToggle.PEspEnable = Value
+Genv.SHub.Toggle.PEspEnable = Value
 local espConnection
 local roleColors = {
     Beast = Color3.fromRGB(255, 0, 0),
@@ -400,7 +401,7 @@ end
 local function startESP()
     if espConnection then return end
     espConnection = SRunService.RenderStepped:Connect(function()
-        if not Genv.SHubToggle.PEspEnable then
+        if not Genv.SHub.Toggle.PEspEnable then
             clearESP()
             espConnection:Disconnect()
             espConnection = nil
@@ -409,7 +410,7 @@ local function startESP()
         pcall(updateESP)
     end)
 end
-if Genv.SHubToggle.PEspEnable then
+if Genv.SHub.Toggle.PEspEnable then
     startESP()
 else
     clearESP()
@@ -417,7 +418,7 @@ end
 end})
 SFTab.Main:AddToggle("EspComputerToggle", {Title = "Esp Computer", Description = "Enable/Disable Esp Computer", Default = false, Callback = function(Value)
 --> created by Artsynia <--
-Genv.SHubToggle.PCCEspEnable = Value
+Genv.SHub.Toggle.PCCEspEnable = Value
 local espConnection
 local espContainer = getSafeParent("Computer")
 local function clearESP()
@@ -480,7 +481,7 @@ end
 local function startESP()
     if espConnection then return end
     espConnection = SRunService.RenderStepped:Connect(function()
-        if not Genv.SHubToggle.PCCEspEnable then
+        if not Genv.SHub.Toggle.PCCEspEnable then
             clearESP()
             espConnection:Disconnect()
             espConnection = nil
@@ -489,7 +490,7 @@ local function startESP()
         pcall(updateESP)
     end)
 end
-if Genv.SHubToggle.PCCEspEnable then
+if Genv.SHub.Toggle.PCCEspEnable then
     startESP()
 else
     clearESP()
@@ -498,7 +499,7 @@ end})
 SFTab.Main:AddToggle("EspFreezePodToggle", {Title = "Esp FreezePod", Description = "Enable/Disable Esp FreezePod", Default = false, Callback = function(Value)
 --> created by fxengif <--
 -- comment by fxengif : ima try to do it after 6 months
-Genv.SHubToggle.FreezePodEspEnable = Value
+Genv.SHub.Toggle.FreezePodEspEnable = Value
 local espConnection
 local color = Color3.fromRGB(0, 0, 245)
 local espContainer = getSafeParent("FreezePod")
@@ -554,7 +555,7 @@ end
 local function startESP()
     if espConnection then return end
     espConnection = SRunService.RenderStepped:Connect(function()
-        if not Genv.SHubToggle.FreezePodEspEnable then
+        if not Genv.SHub.Toggle.FreezePodEspEnable then
             clearESP()
             espConnection:Disconnect()
             espConnection = nil
@@ -563,7 +564,7 @@ local function startESP()
         pcall(updateESP)
     end)
 end
-if Genv.SHubToggle.FreezePodEspEnable then
+if Genv.SHub.Toggle.FreezePodEspEnable then
     startESP()
 else
     clearESP()
@@ -571,7 +572,7 @@ end
 end})
 SFTab.Main:AddToggle("EspExitDoorToggle", {Title = "Esp ExitDoor", Description = "Enable/Disable Esp ExitDoor", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.ExitDoorEspEnable = Value
+Genv.SHub.Toggle.ExitDoorEspEnable = Value
 local espConnection
 local espContainer = getSafeParent("ExitDoor")
 local function clearESP()
@@ -633,7 +634,7 @@ end
 local function startESP()
     if espConnection then return end
     espConnection = SRunService.RenderStepped:Connect(function()
-        if not Genv.SHubToggle.ExitDoorEspEnable then
+        if not Genv.SHub.Toggle.ExitDoorEspEnable then
             clearESP()
             espConnection:Disconnect()
             espConnection = nil
@@ -642,7 +643,7 @@ local function startESP()
         pcall(updateESP)
     end)
 end
-if Genv.SHubToggle.ExitDoorEspEnable then
+if Genv.SHub.Toggle.ExitDoorEspEnable then
     startESP()
 else
     clearESP()
@@ -672,8 +673,8 @@ end})
 local function UpdThisDropdown()
     this:SetValues(GetPlayerList(true))
 end
-Genv.SHubTaskSignal.PAdded = SPlayers.PlayerAdded:Connect(UpdThisDropdown)
-Genv.SHubTaskSignal.PRemoving = SPlayers.PlayerRemoving:Connect(function(p)
+Genv.SHub.TaskSignal.PAdded = SPlayers.PlayerAdded:Connect(UpdThisDropdown)
+Genv.SHub.TaskSignal.PRemoving = SPlayers.PlayerRemoving:Connect(function(p)
     Genv.SHub.WPlr[p.Name] = nil;UpdThisDropdown()
 end)
 end
@@ -683,8 +684,8 @@ SFTab.Main:AddSlider("SliderAura", {Title = "Set Hit Aura Range", Description = 
 end})
 SFTab.Main:AddToggle("AuraToggle", {Title = "Hit Aura", Description = "Enable Hit Aura [Beast]", Default = false, Callback = function(Value)
  --> created by fxengif <--
- Genv.SHubToggle.HitAura = Value
- while Genv.SHubToggle.HitAura and task.wait(0.15) do
+ Genv.SHub.Toggle.HitAura = Value
+ while Genv.SHub.Toggle.HitAura and task.wait(0.15) do
     local LHammerEvent = LPC:FindFirstChild("HammerEvent", true)
     for _, p in pairs(SPlayers:GetPlayers()) do
     if p ~= LP and not IsWhilstPlayer(p.Name) then
@@ -709,8 +710,8 @@ SFTab.Main:AddSlider("SliderTie", {Title = "Set Auto Tie Range", Description = "
 end})
 SFTab.Main:AddToggle("AutoTieToggle", {Title = "Auto Tie", Description = "Enable Auto Tie Player [Beast]", Default = false, Callback = function(Value)
  --> created by fxengif <--
- Genv.SHubToggle.AutoTie = Value
- while Genv.SHubToggle.AutoTie and task.wait(0.15) do
+ Genv.SHub.Toggle.AutoTie = Value
+ while Genv.SHub.Toggle.AutoTie and task.wait(0.15) do
     local LHammerEvent = LPC:FindFirstChild("HammerEvent", true)
     for _, p in pairs(SPlayers:GetPlayers()) do
     if p ~= LP and not IsWhilstPlayer(p.Name) then
@@ -722,7 +723,7 @@ SFTab.Main:AddToggle("AutoTieToggle", {Title = "Auto Tie", Description = "Enable
                 local root = GetRootChar(p.Character)
                 if root and LPC and LPR and LHammerEvent then
                     if (root.Position - LPR.Position).Magnitude <= Genv.SHub.TiePlayerRange then
-                    local pos = (typeof(root.Position) == "Vector3" and root.Position) or Vector3.zero
+                    local pos = (c_type("Vector3", root.Position, true) and root.Position) or Vector3.zero
                     LHammerEvent:FireServer("HammerTieUp", root, pos)
                 end
             end
@@ -734,7 +735,7 @@ end})
 SFTab.Main:AddSection("In-Game")
 SFTab.Main:AddToggle("AutoHelp_CapturedPlr_SilentToggle", {Title = "Auto help Captured Player", Description = "silent mode (no teleport, just help silently)", Default = false, Callback = function(Value)
 --> created by Artsynia <--
-Genv.SHubToggle.AutoHelpCP_silent = Value
+Genv.SHub.Toggle.AutoHelpCP_silent = Value
 local map = GetCurrentMap()
 local RemoteEvent = SReplicatedStorage:FindFirstChild("RemoteEvent")
 local Stats_LP = LP:FindFirstChild("TempPlayerStatsModule")
@@ -742,7 +743,7 @@ local Local_H = Stats_LP and Stats_LP:FindFirstChild("Health")
 local Local_R = Stats_LP and Stats_LP:FindFirstChild("Ragdoll")
 local Local_C = Stats_LP and Stats_LP:FindFirstChild("Captured")
 local function CapturedFreezePod(cmap)
-    if not (cmap and type(cmap) == 'table') then return end
+    if not (cmap and c_type('table', cmap)) then return end
     for _, o in pairs(cmap) do
         if o.Name ~= "FreezePod" then continue end
         local PodTrigger = o:FindFirstChild("PodTrigger", true)
@@ -756,7 +757,7 @@ local function CapturedFreezePod(cmap)
     end
 end
 -- comment by fxengif : DAYYYMNNN sheee is cookingggg!!!
-while Genv.SHubToggle.AutoHelpCP_silent and task.wait(0.05) do
+while Genv.SHub.Toggle.AutoHelpCP_silent and task.wait(0.05) do
     if not (Local_H and Local_R and Local_C) then continue end
     if Local_H.Value <= 0 or Local_R.Value or Local_C.Value then continue end
     if not RemoteEvent then
@@ -778,14 +779,14 @@ while Genv.SHubToggle.AutoHelpCP_silent and task.wait(0.05) do
             task.wait(0.05)
             RemoteEvent:FireServer("Input", "Trigger", true, event)
             RemoteEvent:FireServer("Input", "Action", true)
-        until not (Captured.Value and Genv.SHubToggle.AutoHelpCP_silent)
+        until not (Captured.Value and Genv.SHub.Toggle.AutoHelpCP_silent)
         break
     end
 end
 end})
 SFTab.Main:AddToggle("AutoHelp_CapturedPlrToggle", {Title = "Auto help Captured Player", Description = "Teleport Version", Default = false, Callback = function(Value)
 --> created by Artsynia & fxengif <--
-Genv.SHubToggle.AutoHelpCP = Value
+Genv.SHub.Toggle.AutoHelpCP = Value
 local function DoHelpCFrame(root)
     return root.CFrame * CFrame.new(0, -4.5, 0) * CFrame.Angles(math.rad(90), 0, 0)
 end
@@ -795,7 +796,7 @@ local Stats_LP = LP:FindFirstChild("TempPlayerStatsModule")
 local Local_H = Stats_LP and Stats_LP:FindFirstChild("Health")
 local Local_R = Stats_LP and Stats_LP:FindFirstChild("Ragdoll")
 local Local_C = Stats_LP and Stats_LP:FindFirstChild("Captured")
-while Genv.SHubToggle.AutoHelpCP and task.wait(0.05) do
+while Genv.SHub.Toggle.AutoHelpCP and task.wait(0.05) do
     if not (LPC and LPR and Local_H and Local_R and Local_C) then
         continue -- comment by fxengif : my favourite keyword :p
     end
@@ -818,7 +819,7 @@ while Genv.SHubToggle.AutoHelpCP and task.wait(0.05) do
             task.wait(0.05)
             LPR.CFrame = DoHelpCFrame(root)
             RemoteEvent:FireServer("Input", "Action", true)
-        until not (Captured.Value and Genv.SHubToggle.AutoHelpCP) or (Local_R.Value or Local_C.Value or Local_H.Value <= 0)
+        until not (Captured.Value and Genv.SHub.Toggle.AutoHelpCP) or (Local_R.Value or Local_C.Value or Local_H.Value <= 0)
         if oldCFrame and LPC then LPC:PivotTo(oldCFrame) end
         oldCFrame, helping = nil, false;break
     end
@@ -827,7 +828,7 @@ end})
 SFTab.Main:AddSection("Other")
 SFTab.Main:AddToggle("AntiFlingToggle", {Title = "Anti Fling", Description = "Noclip Player", Default = false, Callback = function(Value)
  --> created by fxengif <--
- Genv.SHubToggle.AntiFling = Value
+ Genv.SHub.Toggle.AntiFling = Value
  local function SAntiFling()
     for _, p in pairs(SPlayers:GetPlayers()) do
         if p ~= LP and p.Character then
@@ -835,7 +836,7 @@ SFTab.Main:AddToggle("AntiFlingToggle", {Title = "Anti Fling", Description = "No
                     if c:IsA "BasePart" then
                         if c.CanCollide then
                             c.CanCollide = false
-                        elseif not (c.CanCollide or Genv.SHubToggle.AntiFling) then
+                        elseif not (c.CanCollide or Genv.SHub.Toggle.AntiFling) then
                             c.CanCollide = true;break
                        end
                   end
@@ -843,13 +844,13 @@ SFTab.Main:AddToggle("AntiFlingToggle", {Title = "Anti Fling", Description = "No
         end
     end
  end
-  while Genv.SHubToggle.AntiFling and SRunService.Heartbeat:Wait() do SAntiFling() end
+  while Genv.SHub.Toggle.AntiFling and SRunService.Heartbeat:Wait() do SAntiFling() end
 end})
 SFTab.Main:AddToggle("TFlingToggle", {Title = "Touch Fling", Description = "let's you fling player by touching them", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.TouchFling=Value
+Genv.SHub.Toggle.TouchFling=Value
  local vel, movel = nil, 0.05
- while Genv.SHubToggle.TouchFling do
+ while Genv.SHub.Toggle.TouchFling do
     SRunService.Heartbeat:Wait()
     vel = LPR.Velocity;LPR.Velocity = vel * 9e8 + Vector3.new(0, 9e8, 0)
     SRunService.RenderStepped:Wait()
@@ -863,19 +864,19 @@ Genv.SHubToggle.TouchFling=Value
 end})
 SFTab.Local:AddSection("Camera")
 SFTab.Local:AddToggle("NoclipCameraToggle", {Title = "Noclip Camera", Description = "Make Camera Can see through the wall", Default = false, Callback = function(Value)
-Genv.SHubToggle.CamNoclip=Value
- while Genv.SHubToggle.CamNoclip and task.wait(0.1) do
+Genv.SHub.Toggle.CamNoclip=Value
+ while Genv.SHub.Toggle.CamNoclip and task.wait(0.1) do
        if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Invisicam) then
              LP.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
        end
  end
-    if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Zoom and not Genv.SHubToggle.CamNoclip) then
+    if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Zoom and not Genv.SHub.Toggle.CamNoclip) then
        LP.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
     end
 end})
 SFTab.Local:AddToggle("CameraDModeToggle", {Title = "Change CameraMode to default", Description = "Disable first person Camera", Default = false, Callback = function(Value)
-Genv.SHubToggle.CamDMode=Value
- while Genv.SHubToggle.CamDMode and task.wait(0.1) do
+Genv.SHub.Toggle.CamDMode=Value
+ while Genv.SHub.Toggle.CamDMode and task.wait(0.1) do
        if (LP.CameraMode ~= Enum.CameraMode.Classic) then
              LP.CameraMode = Enum.CameraMode.Classic
        end
@@ -886,8 +887,8 @@ Genv.SHub.CamMaxZoomDis=ToNumV(Value)
 LP.CameraMaxZoomDistance=Genv.SHub.CamMaxZoomDis
 end})
 SFTab.Local:AddToggle("CameraZoomDisToggle", {Title = "Change Camera Max Zoom Distance", Description = "Enabled Auto Set Camera Max Zoom distance", Default = false, Callback = function(Value)
-Genv.SHubToggle.CamMaxZoom=Value
- while Genv.SHubToggle.CamMaxZoom and task.wait(0.1) do
+Genv.SHub.Toggle.CamMaxZoom=Value
+ while Genv.SHub.Toggle.CamMaxZoom and task.wait(0.1) do
        if (LP.CameraMaxZoomDistance ~= Genv.SHub.CamMaxZoomDis) then
             LP.CameraMaxZoomDistance = Genv.SHub.CamMaxZoomDis
        end
@@ -896,7 +897,7 @@ end})
 SFTab.Local:AddSection("Local")
 SFTab.Local:AddToggle("FBToggle", {Title = "Full Bright", Description = "Enable Full Bright to see anything easily", Default = false, Callback = function(Value)
 --> created by Artsynia <--
-Genv.SHubToggle.FullBright = Value
+Genv.SHub.Toggle.FullBright = Value
 local function saveLighting()
     Genv.SHub.FB_Original = {
         Brightness = SLighting.Brightness,
@@ -938,9 +939,9 @@ local function restoreLighting()
         end
     end
 end
-  if Genv.SHubToggle.FullBright then
+  if Genv.SHub.Toggle.FullBright then
       saveLighting()
-      while Genv.SHubToggle.FullBright and task.wait() do applyFullBright() end
+      while Genv.SHub.Toggle.FullBright and task.wait() do applyFullBright() end
   else
       task.wait(.25);restoreLighting()
   end
@@ -950,8 +951,8 @@ Genv.SHub.tpwalkSpeed = ToNumV(Value)
 end})
 SFTab.Local:AddToggle("TPWalk_Toggle", {Title = "TP Walk", Description = "walking fast just like walkspeed", Default = false, Callback = function(Value)
 --> created by Artsynia <--
-Genv.SHubToggle.TpWalk = Value
- while Genv.SHubToggle.TpWalk do
+Genv.SHub.Toggle.TpWalk = Value
+ while Genv.SHub.Toggle.TpWalk do
     local d = SRunService.Heartbeat:Wait()
     if not (LPC and LPH) then continue end
     if LPH.MoveDirection.Magnitude > 0 then
@@ -961,9 +962,9 @@ Genv.SHubToggle.TpWalk = Value
 end})
 SFTab.Local:AddToggle("InfJumpToggle", {Title = "Infinity Jump", Description = "Enable/Disable Infinity Jump", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.InfJump=Value
-Genv.SHubTaskSignal.InfJump=SUis.JumpRequest:Connect(function()
-    if Genv.SHubToggle.InfJump then
+Genv.SHub.Toggle.InfJump=Value
+Genv.SHub.TaskSignal.InfJump=SUis.JumpRequest:Connect(function()
+    if Genv.SHub.Toggle.InfJump then
         if LPC and LPH then
             LPH:ChangeState("Jumping")
         end
@@ -972,19 +973,19 @@ end)
 end})
 SFTab.Local:AddToggle("NoclipToggle", {Title = "Noclip", Description = "Enable/Disable Noclip", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.Noclip = Value
+Genv.SHub.Toggle.Noclip = Value
  local function Noclip()
      for _, c in pairs(LPC:GetDescendants()) do 
          if c:IsA "BasePart" then
             if c.CanCollide then
                  c.CanCollide = false
-             elseif not (c.CanCollide or Genv.SHubToggle.Noclip) then
+             elseif not (c.CanCollide or Genv.SHub.Toggle.Noclip) then
                  c.CanCollide = true;break
              end
          end
      end
  end
- while Genv.SHubToggle.Noclip and SRunService.Heartbeat:Wait() do Noclip() end
+ while Genv.SHub.Toggle.Noclip and SRunService.Heartbeat:Wait() do Noclip() end
 end})
 SFTab.Anti_Ify:AddToggle("NotifyAdminToggle", {Title = "Notification Admin Join", Description = "Show Notification when Mod/Admin Join This Server", Default = true}):OnChanged(function(Value)
  --> created by Artsynia <--
@@ -1008,16 +1009,16 @@ SFTab.Anti_Ify:AddToggle("NotifyAdminToggle", {Title = "Notification Admin Join"
 end)
 SFTab.Anti_Ify:AddToggle("AntiRagdollToggle", {Title = "Anti Ragdoll", Description = "No Ragdoll onLocal", Default = false, Callback = function(Value)
 --> created by fxengif <--
-Genv.SHubToggle.AntiRagdoll=Value
+Genv.SHub.Toggle.AntiRagdoll=Value
  local function ChangeR(bool)
     LPH:SetStateEnabled(Enum.HumanoidStateType.Physics, bool)
     LPH:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, bool)
     LPH:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, bool)
  end
  local Stats = LP:FindFirstChild("TempPlayerStatsModule")
- while Genv.SHubToggle.AntiRagdoll and task.wait() do
+ while Genv.SHub.Toggle.AntiRagdoll and task.wait() do
    pcall(function()
-        ChangeR(not Genv.SHubToggle.AntiRagdoll)
+        ChangeR(not Genv.SHub.Toggle.AntiRagdoll)
         if not Stats then Stats = LP:FindFirstChild("TempPlayerStatsModule") return end
        local Ragdoll = Stats:FindFirstChild("Ragdoll")
        if Ragdoll and (Ragdoll:IsA("BoolValue") and Ragdoll.Value) then
@@ -1058,8 +1059,8 @@ This = SFTab.Game_Rg:AddToggle("AutoRefreshStatusToggle", {Title = "Auto Refresh
 GameStatus_Pg = SFTab.Game_Rg:CreateParagraph("GameStatus_Paragraph", {Title = "Game Status"})
 RefreshStatus()
 This:OnChanged(function(Value)
- Genv.SHubToggle.AutoReStatus = Value
- while Genv.SHubToggle.AutoReStatus and task.wait(.1) do RefreshStatus() end
+ Genv.SHub.Toggle.AutoReStatus = Value
+ while Genv.SHub.Toggle.AutoReStatus and task.wait(.1) do RefreshStatus() end
 end)
 end --// 
 -- // <𝟹 \\ --
@@ -1090,15 +1091,15 @@ local function GetCurrentBeastPEvent(needed)
 end
 -- comment by fxengif : y'all knowing that making a good script actually easy to do, if you understand how these of them actually does!
 SFTab.Game_Rg:AddToggle("RGSlow_BeastToggle", {Title = "Slow Beast", Description = "make beast walk slowlyyyyy", Default = false, Callback = function(Value)
-Genv.SHubToggle.Rg_SlowBt = Value
- while Genv.SHubToggle.Rg_SlowBt and task.wait(0.05) do
+Genv.SHub.Toggle.Rg_SlowBt = Value
+ while Genv.SHub.Toggle.Rg_SlowBt and task.wait(0.05) do
     local event = GetCurrentBeastPEvent()
     if event then event:FireServer("Jumped") end
  end
 end})
 SFTab.Game_Rg:AddToggle("RGUnTie_BeastToggle", {Title = "Beast Untie Player", Description = "making beast untie player instantly", Default = false, Callback = function(Value)
-Genv.SHubToggle.Rg_distieBt = Value
- while Genv.SHubToggle.Rg_distieBt and task.wait(0.05) do
+Genv.SHub.Toggle.Rg_distieBt = Value
+ while Genv.SHub.Toggle.Rg_distieBt and task.wait(0.05) do
     local event = GetCurrentBeastHEvent()
     if event then event:FireServer("HammerClick", true) end
  end
@@ -1142,12 +1143,12 @@ SFTab.Content:AddInput("Input_CustomName", {Title = "Custom Name", Default = "",
 Genv.SHub.CustomName = t_str(str)
 end})
 SFTab.Content:CreateToggle("EnableHide_ListName_Toggle", {Title = "Enabled Change Text Playerlist (Ui)", Description = "useful when record/showcase", Default = false, Callback = function(v) 
-Genv.SHubToggle.HideListName = v
+Genv.SHub.Toggle.HideListName = v
 local name = GetCurrentUiPlrFrame()
- while name and not Genv.SHubToggle.HideListName and task.wait(.1) do
+ while name and not Genv.SHub.Toggle.HideListName and task.wait(.1) do
      name.Text = LP.Name; task.wait(.2); break
  end
- while Genv.SHubToggle.HideListName and task.wait(0.01) do
+ while Genv.SHub.Toggle.HideListName and task.wait(0.01) do
         if not LPGui then continue end
         name = GetCurrentUiPlrFrame()
         if name then
@@ -1156,12 +1157,12 @@ local name = GetCurrentUiPlrFrame()
  end
 end})
 SFTab.Content:CreateToggle("EnableHide_Bars_Toggle", {Title = "Enabled Change Text Bars (Ui)", Description = "useful when record/showcase", Default = false, Callback = function(v) 
-Genv.SHubToggle.HideBars = v
+Genv.SHub.Toggle.HideBars = v
 local name = GetCurrentUiPlrBars()
- while name and not Genv.SHubToggle.HideBars and task.wait(.1) do
+ while name and not Genv.SHub.Toggle.HideBars and task.wait(.1) do
      name.Text = LP.Name; task.wait(.2); break
  end
- while Genv.SHubToggle.HideBars and task.wait(0.01) do
+ while Genv.SHub.Toggle.HideBars and task.wait(0.01) do
         if not LPGui then continue end
         name = GetCurrentUiPlrBars()
         if name then
