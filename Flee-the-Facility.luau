@@ -47,15 +47,14 @@ task.spawn(function()
         pcall(setidentity, 8)
     end
 end)
-function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean): any?
+function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean): any?
     local s, sc = xpcall(function()
-        local DoLoader = Loaded and LoadRawString or function(r) return r end
-        if (ugc.HttpGet) then return DoLoader(ugc:HttpGet(RequestHttp))() -- comment by fxengif : using executor custom HttpGet function which officially was actually known as HttpGetAsync function in ugc global.
-        elseif (ugc.HttpGetAsync) then return DoLoader(ugc:HttpGetAsync(RequestHttp))() -- comment by fxengif : may need a high identity so that why I set your identity to 8 (default access dent)
-        elseif (request) then return DoLoader(request({Url = RequestHttp, Method = "GET"}).Body)() -- comment by fxengif : final CallBack
-        end
-        end, function(e)
-        if c_type("string", e) then FindServiceTery"StarterGui":SetCore("SendNotification",{Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4}) end
+        local DoLoader = Loaded and LoadRawString or function(r) return function() return r end end
+        local response;if ugc.HttpGet then response = ugc:HttpGet(RequestHttp, b or false)
+        elseif ugc.HttpGetAsync then response = ugc:HttpGetAsync(RequestHttp)
+        elseif request then response = request({Url = RequestHttp, Method = "GET"}).Body end;return DoLoader(response)()
+    end, function(e)
+        if c_type("string", e) then FindServiceTery"StarterGui":SetCore("SendNotification", {Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4}) end
         return nil
     end)
     return s and sc
