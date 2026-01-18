@@ -34,6 +34,7 @@ end
 local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
 -- local newnative = c_caller("function", newcclosure, false, function(f) return f end)
+local SetClipboard = c_caller("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
 local request, LoadRawString, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
 -- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later.
 --> created by fxengif <--
@@ -49,12 +50,20 @@ task.spawn(function()
 end)
 function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean): any?
     local s, sc = xpcall(function()
-        local DoLoader = Loaded and LoadRawString or function(r) return function() return r end end
-        local response;if ugc.HttpGet then response = ugc:HttpGet(RequestHttp, b or false)
-        elseif ugc.HttpGetAsync then response = ugc:HttpGetAsync(RequestHttp)
+        local DoLoader, m = Loaded and LoadRawString or function(r) return function() return r end end, b or false
+        local response;if ugc.HttpGet then response = ugc:HttpGet(RequestHttp, m)
+        elseif ugc.HttpGetAsync then response = ugc:HttpGetAsync(RequestHttp, m)
         elseif request then response = request({Url = RequestHttp, Method = "GET"}).Body end;return DoLoader(response)()
     end, function(e)
-        if c_type("string", e) then FindServiceTery"StarterGui":SetCore("SendNotification", {Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4}) end
+        local BF = Instance.new("BindableFunction")
+        BF.OnInvoke = function(c)
+            if c ~= "Close" and SetClipboard then
+                SetClipboard("Https :- "..RequestHttp.."\nError Detail :- "..e)
+            end
+        end
+        if c_type("string", e) then
+            FindServiceTery"StarterGui":SetCore("SendNotification", {Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4, Callback = BF, Button1 = "Copy", Button2 = "Close"})
+        end
         return nil
     end)
     return s and sc
@@ -110,10 +119,10 @@ local GameName = c_type("table", PInfo) and PInfo.Name or "baba"
 if not IsGame_Valid() then return tracery_notif(GameName, "this current game was incorrect, does we get it right?", 3.5) end
 tracery_notif("Loading", "Please Wait...", 3.5)
 -------------------------------------------------------
-local UiGit = "https://github.com/ActualMasterOogway/Fluent-Renewed"
+local UiGit, UiRaw = "https://github.com/ActualMasterOogway/Fluent-Renewed", "https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed"
 local Fluent = RequestLoadRawHttp(UiGit.."/releases/latest/download/Fluent.luau", true)
-local SaveManager = RequestLoadRawHttp(UiGit.."/blob/main/Addons/SaveManager.luau?raw=true", true)
-local InterfaceManager = RequestLoadRawHttp(UiGit.."/blob/main/Addons/InterfaceManager.luau?raw=true", true)
+local SaveManager = RequestLoadRawHttp(UiRaw.."/refs/heads/main/Addons/SaveManager.luau", true)
+local InterfaceManager = RequestLoadRawHttp(UiRaw.."/refs/heads/main/Addons/InterfaceManager.luau", true)
 local SWorkspace = FindServiceTery("Workspace")
 local SLighting = FindServiceTery("Lighting")
 local SUis = FindServiceTery("UserInputService")
@@ -1138,20 +1147,29 @@ local function GetCurrentUiPlrBars(): any?
     return Genv.SHub.BarsTL
 end
 Genv.SHub.CustomName = ""
+Genv.SHub.CustomLevel = 100
+local lv = GetCurrentUiPlrFrame(true)
+local oldlvl = lv and lv.Text or 1
 SFTab.Content:AddInput("Input_CustomName", {Title = "Custom Name", Default = "", Placeholder = "", Numeric = false, Finished = false, Callback = function(str)
 Genv.SHub.CustomName = t_str(str)
 end})
+SFTab.Content:AddInput("Input_CustomLevel", {Title = "Custom Level", Default = "", Placeholder = "", Numeric = true, Finished = false, Callback = function(n)
+Genv.SHub.CustomLevel = ToNumV(n)
+end})
 SFTab.Content:CreateToggle("EnableHide_ListName_Toggle", {Title = "Enabled Change Text Playerlist (Ui)", Description = "useful when record/showcase", Default = false, Callback = function(v) 
 Genv.SHub.Toggle.HideListName = v
-local name = GetCurrentUiPlrFrame()
- while name and not Genv.SHub.Toggle.HideListName and task.wait(.1) do
-     name.Text = LP.Name; task.wait(.2); break
+local name, lvl = GetCurrentUiPlrFrame(), GetCurrentUiPlrFrame(true)
+ while name and lvl and not Genv.SHub.Toggle.HideListName and task.wait(.1) do
+     name.Text = LP.Name; lvl.Text = oldlvl; task.wait(.2); break
  end
  while Genv.SHub.Toggle.HideListName and task.wait(0.01) do
         if not LPGui then continue end
-        name = GetCurrentUiPlrFrame()
+        name, lvl = GetCurrentUiPlrFrame(), GetCurrentUiPlrFrame(true)
         if name then
             name.Text = Genv.SHub.CustomName
+        end
+        if lvl then
+            lvl.Text = Genv.SHub.CustomLevel
         end
  end
 end})
