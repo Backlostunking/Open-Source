@@ -1,41 +1,34 @@
---[[
-local GetSafeService = loadstring(game:HttpGet("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService"))() or function(s) return game:GetService(s) end
-local Players = GetSafeService("Players", true) -- enable cloneref if wanted.
-print(Players)
-]]
--- Version 1.4.2
+-- Version 1.4.3
 function GetSafeService(serviceName, isUsingCRef)
-local s, rs = pcall(function()
-    local Ugc = game or Game
-    local service = nil
-    local typeof_ = typeof or type
-    if not service and typeof_(Ugc.GetService) == "function" then
-        local s, r = pcall(Ugc.GetService, Ugc, serviceName)
-        if s and r then service = r end
-    end
-    if not service and typeof_(Ugc.FindService) == "function" then
-        local s, r = pcall(Ugc.FindService, Ugc, serviceName)
-        if s and r then service = r end
-    end
-    if not service and typeof_(Ugc.service) == "function" then
-        local s, r = pcall(Ugc.service, Ugc, serviceName)
-        if s and r then service = r end
-    end
-    if not service and typeof_(Ugc.FindFirstChild) == "function" then
-        local s, r = pcall(Ugc.FindFirstChild, Ugc, serviceName)
-        if s and r then service = r end
-    end
-    if not service then
-        local s, r = pcall(function()
-            return Ugc[serviceName]
-        end)
-        if s and r then service = r end
-    end
-    if service and cloneref and typeof_(cloneref) == "function" and isUsingCRef then
-        return cloneref(service)
-    end
-   return service
-  end)
-return s and rs
+    local s, sc = pcall(function()
+        local Ugc, Service = game or Game
+        if not Service then
+            local s, r = pcall(Ugc.GetService, Ugc, serviceName)
+            if s and r then Service = r end
+        end
+        if not Service then
+            pcall(function()
+                local s, r = pcall(Ugc.FindService, Ugc, serviceName)
+                if s and r then Service = r end
+            end)
+        end
+        if not Service then
+            pcall(function()
+                local s, r = pcall(Ugc.service, Ugc, serviceName)
+                if s and r then Service = r end
+            end)
+        end
+        if not Service then
+            local s, r = pcall(function()
+                return Ugc[serviceName]
+            end)
+            if s and r then service = r end
+        end
+        if Service and cloneref and type(cloneref) == "function" and isUsingCRef then
+            return cloneref(Service)
+        end
+       return Service
+      end)
+    return s and sc
 end
 return GetSafeService
