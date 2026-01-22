@@ -8,8 +8,6 @@
 
 -- comment by fxengif : there actually a lot of while loop used so performance can be badly but you know it fine
 
--- comment by fxengif : this is a quick update, sorry. i don't have enough time.
-
 do --// FTF \\--
 --> created by fxengif <--
 local function c_caller(t, f, cf, ...)
@@ -18,7 +16,7 @@ end
 local isluau_ = c_caller("function", isluau, true)
 local function ReadVMVersion()
     if isluau_ then return "Luau" end -- comment by fxengif : some executor has this function in their global environment like krnl
-    if _VERSION and type(_VERSION) == "string" then return _VERSION end -- comment by fxengif : in Roblox global environment variable
+    if _VERSION and type(_VERSION) == "string" then return _VERSION end -- comment by fxengif : in roblox global environment variable
     return "Error"
 end
 local VM_Version = ReadVMVersion()
@@ -34,6 +32,8 @@ end
 local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
 -- local newnative = c_caller("function", newcclosure, false, function(f) return f end)
+-- local GetProperties = c_caller("function", getproperties)
+-- getproperties(params1: Instance): {properties, value}
 local SetClipboard = c_caller("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
 local request, LoadRawString, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
 -- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later.
@@ -48,53 +48,79 @@ task.spawn(function()
         pcall(setidentity, 8)
     end
 end)
-function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean): any?
-    local s, sc = xpcall(function()
-        local DoLoader, m = Loaded and LoadRawString or function(r) return function() return r end end, b or false
-        local response;if ugc.HttpGet then response = ugc:HttpGet(RequestHttp, m)
-        elseif ugc.HttpGetAsync then response = ugc:HttpGetAsync(RequestHttp, m)
-        elseif request then response = request({Url = RequestHttp, Method = "GET"}).Body end;return DoLoader(response)()
-    end, function(e)
-        local BF = Instance.new("BindableFunction")
-        BF.OnInvoke = function(c)
-            if c ~= "Close" and SetClipboard then
-                SetClipboard("Https :- "..RequestHttp.."\nError Detail :- "..e)
-            end
-        end
-        if c_type("string", e) then
-            FindServiceTery"StarterGui":SetCore("SendNotification", {Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = 4, Callback = BF, Button1 = "Copy", Button2 = "Close"})
-        end
-        return nil
-    end)
-    return s and sc
-end
 local t_str, t_num = tostring, tonumber
-function CallValidFunc(obj, propfunc, arg)
+function CallValidFunc(obj : any, propfunc : string, ... : any): any
     if not c_type("Instance", obj, true) then
         return "Invalid object (not an Instance)"
     end
-    local s, r = pcall(function()
+    local arg = ...;local s, r = pcall(function()
         return obj[propfunc](obj, arg)
     end)
     if c_type("boolean", r) then return r end
     return s and r or `Error: {t_str(r)}`
 end
-local GetAdvanceS = RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService", true) or function(s) return ugc:GetService(s) end
+--[[local function isValidHttpFunc(obj : Instance, ... : any): boolean
+    local r = CallValidFunc(obj, ...)
+    return c_type('string', r) and r:lower():find('argument', 1, true) ~= nil
+end]]
+function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean, snotify: boolean): any?
+    -- comment by fxengif : elite callback++ level 1.0
+    local s, sc = xpcall(function()
+        local rep, DoLoader, m = nil, Loaded and LoadRawString or function(r) return function() return r end end, b or false
+        if not rep then
+            rep = CallValidFunc(ugc, "HttpGet", RequestHttp, m)
+        end
+        if not rep then
+            rep = CallValidFunc(ugc, "HttpGetAsync", RequestHttp, m)
+        end
+        -- comment by fxengif : method 2 (check by error), whatever
+        --[[if isValidHttpFunc(ugc, "HttpGet") then
+            rep = ugc:HttpGet(RequestHttp, m)
+        elseif isValidHttpFunc(ugc, "HttpGetAsync") then
+            rep = ugc:HttpGetAsync(RequestHttp, m)
+        end]]
+        if request and not rep then
+            local s, sc = pcall(function()
+                local t = request({Url = RequestHttp, Method = "GET"})
+                return c_type("table", t) and t.Body
+            end)
+            rep = s and sc
+        end
+        return DoLoader(rep)()
+    end, function(e)
+        if c_type("string", e) and not snotify then
+            local BF = Instance.new("BindableFunction")
+            BF.OnInvoke = function(c)
+                if c ~= "Close" and c_type("function", SetClipboard) then
+                    SetClipboard("Https :- "..RequestHttp.."\nError Detail :- "..e)
+                end
+            end
+            FindServiceTery"StarterGui":SetCore("SendNotification", {Title = "Error: "..RequestHttp, Text = e, Icon = "rbxassetid://7733701545", Duration = (1/0), Callback = BF, Button1 = "Copy", Button2 = "Close"});BF:Destroy()
+        end
+        return nil
+    end)
+    return s and sc
+end
+local GetAdvanceS;xpcall(function()
+    GetAdvanceS = RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/Open-Source/refs/heads/main/GetSafeService", true, nil, true)
+end, function()
+    GetAdvanceS = FindServiceTery
+end)
 local getgenv_ = c_caller("function", getgenv, true, c_caller("table", getgenv))
 local Genv = c_type("table", getgenv_) and getgenv_ or _G;Genv.SHub = Genv.SHub or {};Genv.SHub.MemoryService = Genv.SHub.MemoryService or {}
 task.spawn(function()
-local SEry = setmetatable(Genv.SHub.MemoryService, {
-    __index = function(se, n)
-    local ref = c_caller("function", cloneref, false, function(s) return s end)
-    local s, c = pcall(function()
-        return ref(GetAdvanceS(n))
-    end)
-    if s and c then
-        pcall(rawset, se, n, c)
-        return c
+    local SEry = setmetatable(Genv.SHub.MemoryService, {
+        __index = function(se, n)
+        local ref, gs = c_caller("function", cloneref, false, function(s) return s end), c_caller("function", GetAdvanceS, false)
+        local s, c = pcall(function()
+            return ref(gs(n))
+        end)
+        if s and c then
+            pcall(rawset, se, n, c)
+            return c
+        end
     end
-end
-});FindServiceTery = function(s) return SEry[s] end
+    });FindServiceTery = function(s) return SEry[s] end
 end)
 RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/ScriptStarOZX/refs/heads/main/IfXDarkNotification.Lua", true);local tracery_notif=createNotification;createNotification=nil
 -- // this function created by Artsynia \\ --
@@ -160,7 +186,7 @@ task.spawn(function()
 end)
 -- // Task End \\ --
 local function isLocalPlayerExist()
-    local s, e = pcall(function() SPlayers:CreateLocalPlayer() end)
+    local s, e = pcall(SPlayers.CreateLocalPlayer, SPlayers)
     if c_type("string", e) and e:lower():find('already exist') then
         return true, s
     end
@@ -291,7 +317,6 @@ local function applyHighlight(part: any): ()
     hl.OutlineTransparency = 0.85
     hl.Parent = part
 end
--- comment by Artsynia : i also can make esp look more cool but I just tired to do it
 -- // this function created by Artsynia \\ --
 local function createBillboard(part: any, IDorN: string, ESPContainer: any): ()
     local gui = part:FindFirstChild(IDorN)
