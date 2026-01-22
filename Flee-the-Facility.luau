@@ -51,13 +51,13 @@ end)
 local t_str, t_num = tostring, tonumber
 function CallValidFunc(obj : any, propfunc : string, ... : any): any
     if not c_type("Instance", obj, true) then
-        return "Invalid object (not an Instance)"
+        return "Invalid object (not an Instance)", false
     end
     local arg = ...;local s, r = pcall(function()
         return obj[propfunc](obj, arg)
     end)
     if c_type("boolean", r) then return r end
-    return s and r or `Error: {t_str(r)}`
+    return s and r, s or `Error: {t_str(r)}`, false
 end
 --[[local function isValidHttpFunc(obj : Instance, ... : any): boolean
     local r = CallValidFunc(obj, ...)
@@ -67,11 +67,12 @@ function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean, sn
     -- comment by fxengif : elite callback++ level 1.0
     local s, sc = xpcall(function()
         local rep, DoLoader, m = nil, Loaded and LoadRawString or function(r) return function() return r end end, b or false
+        local valid
         if not rep then
-            rep = CallValidFunc(ugc, "HttpGet", RequestHttp, m)
+            rep, valid = CallValidFunc(ugc, "HttpGet", RequestHttp, m)
         end
-        if not rep then
-            rep = CallValidFunc(ugc, "HttpGetAsync", RequestHttp, m)
+        if not valid then
+            rep, valid = CallValidFunc(ugc, "HttpGetAsync", RequestHttp, m)
         end
         -- comment by fxengif : method 2 (check by error), whatever
         --[[if isValidHttpFunc(ugc, "HttpGet") then
@@ -79,7 +80,7 @@ function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean, sn
         elseif isValidHttpFunc(ugc, "HttpGetAsync") then
             rep = ugc:HttpGetAsync(RequestHttp, m)
         end]]
-        if request and not rep then
+        if request and not valid then
             local s, sc = pcall(function()
                 local t = request({Url = RequestHttp, Method = "GET"})
                 return c_type("table", t) and t.Body
