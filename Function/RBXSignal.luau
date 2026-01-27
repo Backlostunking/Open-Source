@@ -1,0 +1,83 @@
+-- version 0.09 [beta]
+local t, f = true, false
+local genv = (type(getgenv) == "function" and getgenv()) or _G
+genv._connection_hooks = genv._connection_hooks or {}
+local function isValid(obj, signalKey, signal)
+    return typeof(obj) == "Instance" and type(signalKey) == "string" and typeof(signal) == "RBXScriptSignal"
+end
+function genv.get_hook_connections()
+    return genv._connection_hooks
+end
+function genv.is_connection_hooked(obj: Instance?, k: string?): boolean
+    if typeof(obj) ~= "Instance" or type(k) ~= "string" then return f end
+    local od = genv._connection_hooks[obj]
+    if not od then return f end
+    local sd = od[k]
+    if not sd or not sd.connections then return f end
+    return #sd.connections > 0
+end
+function genv.restore_connection(obj: Instance, k: string): boolean
+    if not genv.is_connection_hooked(obj, k) then return f end
+    local od = genv._connection_hooks[obj]
+    local sd = od[k]
+    if not sd then return f end
+    local s = true
+    for _, c in pairs(sd.connections) do
+        local su = pcall(function()
+            local s = pcall(c.Disconnect, c)
+            if not s then s = pcall(c.disconnect, c) end
+            return s
+        end)
+        if not su then
+            s = false
+        end
+    end
+    od[k] = nil
+    if next(od) == nil then
+        genv._connection_hooks[obj] = nil
+    end
+    return s
+end
+function genv.hook_connection(obj: Instance, k: string, signal: RBXScriptSignal, func: (...any) -> (), usingOnce: boolean?, autoRestore: boolean?): any?
+    if not isValid(obj, k, signal) then return nil end
+    if autoRestore then genv.restore_connection(obj, k) end
+    if type(func) ~= "function" then return nil end
+    local od = genv._connection_hooks[obj]
+    if not od then
+        od = {}
+        genv._connection_hooks[obj] = od
+    end
+    local sd = od[k]
+    if not sd then
+        sd = {connections = {}}
+        od[k] = sd
+    end
+    if #sd.connections > 0 then return nil end
+    local conn
+    local callback = function(...)
+        pcall(func, ...)
+        if usingOnce then genv.restore_connection(obj, k) end
+    end
+    local ss = pcall(function()
+        if usingOnce then
+            s, c = pcall(signal.Once, signal, callback)
+        else
+            s, c = pcall(signal.Connect, signal, callback)
+        end
+        return s
+    end)
+    if not ss then
+        ss = pcall(function()
+            if usingOnce then
+                s, c = pcall(signal.once, signal, callback)
+            else
+                s, c = pcall(signal.connect, signal, callback)
+            end
+            return s
+        end)
+    end
+    if not (s or c) then return nil end
+    conn = c
+    table.insert(sd.connections, conn)
+    return signal, s
+end
