@@ -1,12 +1,14 @@
 -- comment by fxengif : thank you guys for support!!
 
--- comment by fxengif : it actually been 6 months as I don't making script in Roblox, sooo MY CODING SKILLS ARE DROPPED
+-- comment by fxengif : it actually been 6 months as I don't making script in Roblox, sooo MY CODING SKILLS ARE DROPPED (not actually much)
 
 -- comment by fxengif : for some people who don't know so i only study Lua/LuaU for 2-3 years :p
 
 -- comment by fxengif : if you want to help us added more feature in this script then DM me on discord: @fxengif
 
--- comment by fxengif : there actually a lot of while loop used so performance can be badly but you know it fine
+-- comment by fxengif : there actually has a lot of while loop used so the performance can be badly but you know it fine
+
+-- comment by fxengif : I'm bored
 
 do --// FTF \\--
 --> created by fxengif <--
@@ -33,10 +35,9 @@ local this = {Version = '1.1.0'}
 local FindServiceTery = function(s) return ugc:GetService(s) end
 -- local newnative = c_caller("function", newcclosure, false, function(f) return f end)
 -- local GetProperties = c_caller("function", getproperties)
--- getproperties(params1: Instance): {properties, value}
 local SetClipboard = c_caller("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
 local request, LoadRawString, setidentity, getidentity = http_request or request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request), (loadstring or load), (setidentity or setthreadidentity) or (setthreadcontext or set_thread_context), (getidentity or getthreadidentity) or (getthreadcontext or get_thread_context)
--- local old_identity = getidentity and getidentity() -- comment by fxengif : maybe i will use this later.
+local identity, old_identity = c_caller("function", getidentity, true);old_identity=identity
 --> created by fxengif <--
 local function c_type(ty, v, lu)
     local t = lu and typeof or type
@@ -44,8 +45,8 @@ local function c_type(ty, v, lu)
 end
 -- end --
 task.spawn(function()
-    if (getidentity and setidentity and c_type("number", getidentity())) and getidentity() <= 5 then
-        pcall(setidentity, 8)
+    if (getidentity and setidentity and c_type("number", identity)) and identity <= 5 then
+        pcall(setidentity, 8);identity = getidentity()
     end
 end)
 local t_str, t_num = tostring, tonumber
@@ -63,7 +64,7 @@ end
     local r = CallValidFunc(obj, ...)
     return c_type('string', r) and r:lower():find('argument', 1, true) ~= nil
 end]]
-function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean, b: boolean, snotify: boolean): any?
+function RequestLoadRawHttp(RequestHttp: string, Loaded: boolean?, b: boolean?, snotify: boolean?): any?
     -- comment by fxengif : elite callback++ level 1.0
     local s, sc = xpcall(function()
         local rep, DoLoader, m = nil, Loaded and LoadRawString or function(r) return function() return r end end, b or false
@@ -110,18 +111,19 @@ end)
 local getgenv_ = c_caller("function", getgenv, true, c_caller("table", getgenv))
 local Genv = c_type("table", getgenv_) and getgenv_ or _G;Genv.SHub = Genv.SHub or {};Genv.SHub.MemoryService = Genv.SHub.MemoryService or {}
 task.spawn(function()
-    local SEry = setmetatable(Genv.SHub.MemoryService, {
-        __index = function(se, n)
-        local ref, gs = c_caller("function", cloneref, false, function(s) return s end), c_caller("function", GetAdvanceS, false)
+    FindServiceTery = setmetatable(Genv.SHub.MemoryService, {
+        __call = function(t, n)
+        local ref, gs = c_caller("function", cloneref, nil, function(s) return s end), c_caller("function", GetAdvanceS)
         local s, c = pcall(function()
             return ref(gs(n))
         end)
         if s and c then
-            pcall(rawset, se, n, c)
+            local x = pcall(rawset, t, n, c)
+            if not x then pcall(table.insert, t, {n = c}) end
             return c
         end
     end
-    });FindServiceTery = function(s) return SEry[s] end
+    })
 end)
 RequestLoadRawHttp("https://raw.githubusercontent.com/Backlostunking/ScriptStarOZX/refs/heads/main/IfXDarkNotification.Lua", true);local tracery_notif=createNotification;createNotification=nil
 -- // this function created by Artsynia \\ --
@@ -159,7 +161,7 @@ local SPlayers = FindServiceTery("Players")
 local SReplicatedStorage = FindServiceTery("ReplicatedStorage")
 -- local SCurrentCamera = SWorkspace.CurrentCamera
 function GetIsOnMobile()
-    local IsOnMobile = false
+    local IsOnMobile
     xpcall(function()
         IsOnMobile = table.find({Enum.Platform.Android, Enum.Platform.IOS}, SUis:GetPlatform())
         end, function()
@@ -205,7 +207,7 @@ local LPGui = LP:FindFirstChildOfClass("PlayerGui")
 function GetHiddenGui()
     local UI
      if not UI then
-        local gethui_ = c_caller("function", gethui, true)
+        local gethui_ = c_caller("function", gethui, "ae editor")
         if gethui_ then UI = gethui_
         elseif SCoreGui and SCoreGui:FindFirstChild"RobloxGui" then UI = SCoreGui.RobloxGui
         elseif SCoreGui then UI = SCoreGui
@@ -689,19 +691,19 @@ SFTab.Main:AddSection("Beast")
 Genv.SHub.WPlr = Genv.SHub.WPlr or {}
 local function MapToArray(map)
     local t = {}
-    for name, v in pairs(map) do
+    for n, v in pairs(map) do
         if v then
-            table.insert(t, name)
+            table.insert(t, n)
         end
     end
     return t
 end
-local function IsWhilstPlayer(this_)
-    return Genv.SHub.WPlr[this_] == true
+local function IsWhilstPlayer(p)
+    return Genv.SHub.WPlr[p]
 end
 do
 local this = SFTab.Main:CreateDropdown("WhilstPlayer_Dropdown", {Title = "Whilst Player", Description = "Select Player to Add Whilst", Values = GetPlayerList(true), Multi = true, Default = MapToArray(Genv.SHub.WPlr), Callback = function(t_select)
-     -- comment by fxengif : >> {this = bool, ...}
+     -- comment by fxengif : >> {this = boolean?, ...}
      Genv.SHub.WPlr = t_select
 end})
 local function UpdThisDropdown()
@@ -790,7 +792,7 @@ local function CapturedFreezePod(cmap)
         end
     end
 end
--- comment by fxengif : DAYYYMNNN sheee is cookingggg!!!
+-- comment by fxengif : baddie coder [cry]
 while Genv.SHub.Toggle.AutoHelpCP_silent and task.wait(0.05) do
     if not (Local_H and Local_R and Local_C) then continue end
     if Local_H.Value <= 0 or Local_R.Value or Local_C.Value then continue end
@@ -900,9 +902,9 @@ SFTab.Local:AddSection("Camera")
 SFTab.Local:AddToggle("NoclipCameraToggle", {Title = "Noclip Camera", Description = "Make Camera Can see through the wall", Default = false, Callback = function(Value)
 Genv.SHub.Toggle.CamNoclip=Value
  while Genv.SHub.Toggle.CamNoclip and task.wait(0.1) do
-       if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Invisicam) then
-             LP.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
-       end
+   if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Invisicam) then
+         LP.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
+   end
  end
     if (LP.DevCameraOcclusionMode ~= Enum.DevCameraOcclusionMode.Zoom and not Genv.SHub.Toggle.CamNoclip) then
        LP.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
@@ -911,9 +913,9 @@ end})
 SFTab.Local:AddToggle("CameraDModeToggle", {Title = "Change CameraMode to default", Description = "Disable first person Camera", Default = false, Callback = function(Value)
 Genv.SHub.Toggle.CamDMode=Value
  while Genv.SHub.Toggle.CamDMode and task.wait(0.1) do
-       if (LP.CameraMode ~= Enum.CameraMode.Classic) then
-             LP.CameraMode = Enum.CameraMode.Classic
-       end
+   if (LP.CameraMode ~= Enum.CameraMode.Classic) then
+         LP.CameraMode = Enum.CameraMode.Classic
+   end
  end
 end})
 SFTab.Local:AddInput("Input_CamMaxZoom", {Title = "Camera Max Zoom", Default = "", Placeholder = "Set Max Zoom Distance", Numeric = true, Finished = false, Callback = function(Value)
@@ -923,9 +925,9 @@ end})
 SFTab.Local:AddToggle("CameraZoomDisToggle", {Title = "Change Camera Max Zoom Distance", Description = "Enabled Auto Set Camera Max Zoom distance", Default = false, Callback = function(Value)
 Genv.SHub.Toggle.CamMaxZoom=Value
  while Genv.SHub.Toggle.CamMaxZoom and task.wait(0.1) do
-       if (LP.CameraMaxZoomDistance ~= Genv.SHub.CamMaxZoomDis) then
-            LP.CameraMaxZoomDistance = Genv.SHub.CamMaxZoomDis
-       end
+   if (LP.CameraMaxZoomDistance ~= Genv.SHub.CamMaxZoomDis) then
+        LP.CameraMaxZoomDistance = Genv.SHub.CamMaxZoomDis
+   end
  end
 end})
 SFTab.Local:AddSection("Local")
@@ -1099,7 +1101,6 @@ end)
 end --// 
 -- // <𝟹 \\ --
 ------------------------------------------------------------------
--- comment by fxengif : i guess i also watch tiktok all day when i wake up, every morning of my lifeeee are tiktokk
 SFTab.Game_Rg:AddSection("Ragebaiting Beast")
 -- // this function created by fxengif \\ --
 local function GetCurrentBeastHEvent(needed)
@@ -1123,7 +1124,6 @@ local function GetCurrentBeastPEvent(needed)
         end
     end
 end
--- comment by fxengif : y'all knowing that making a good script actually easy to do, if you understand how these of them actually does!
 SFTab.Game_Rg:AddToggle("RGSlow_BeastToggle", {Title = "Slow Beast", Description = "make beast walk slowlyyyyy", Default = false, Callback = function(Value)
 Genv.SHub.Toggle.Rg_SlowBt = Value
  while Genv.SHub.Toggle.Rg_SlowBt and task.wait(0.05) do
@@ -1189,14 +1189,14 @@ local name, lvl = GetCurrentUiPlrFrame(), GetCurrentUiPlrFrame(true)
      name.Text = LP.Name; lvl.Text = oldlvl; task.wait(.2); break
  end
  while Genv.SHub.Toggle.HideListName and task.wait(0.01) do
-        if not LPGui then continue end
-        name, lvl = GetCurrentUiPlrFrame(), GetCurrentUiPlrFrame(true)
-        if name then
-            name.Text = Genv.SHub.CustomName
-        end
-        if lvl then
-            lvl.Text = Genv.SHub.CustomLevel
-        end
+    if not LPGui then continue end
+    name, lvl = GetCurrentUiPlrFrame(), GetCurrentUiPlrFrame(true)
+    if name then
+        name.Text = Genv.SHub.CustomName
+    end
+    if lvl then
+        lvl.Text = Genv.SHub.CustomLevel
+    end
  end
 end})
 SFTab.Content:CreateToggle("EnableHide_Bars_Toggle", {Title = "Enabled Change Text Bars (Ui)", Description = "useful when record/showcase", Default = false, Callback = function(v) 
@@ -1206,11 +1206,11 @@ local name = GetCurrentUiPlrBars()
      name.Text = LP.Name; task.wait(.2); break
  end
  while Genv.SHub.Toggle.HideBars and task.wait(0.01) do
-        if not LPGui then continue end
-        name = GetCurrentUiPlrBars()
-        if name then
-            name.Text = Genv.SHub.CustomName
-        end
+    if not LPGui then continue end
+    name = GetCurrentUiPlrBars()
+    if name then
+        name.Text = Genv.SHub.CustomName
+    end
  end
 end})
 end
@@ -1228,7 +1228,7 @@ do
 SFTab.Other:AddSection("Executor Environment")
 local CurrentExc = c_caller("function", identifyexecutor or getexecutorname, true, "Error")
 local function list_ev()
-    if Genv == _G then return nil end
+    if Genv == _G then return end
     local e, re = {}, 0
     for n, a in pairs(Genv) do
         if t_str(n):lower():find("shub", 1, true) then continue end
