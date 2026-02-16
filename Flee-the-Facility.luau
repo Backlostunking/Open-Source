@@ -8,7 +8,8 @@
 
 do --/* FTF */--
 local function c_caller(t, f, cf, ...)
-    return (type(f) == t and (cf and f())) or ...
+    if type(f) == t then if cf then return f() end return f end
+    return ...
 end
 local function ReadVMVersion()
     return c_caller("function", isluau, 0) and "Luau" or _VERSION
