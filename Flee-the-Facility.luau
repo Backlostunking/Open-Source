@@ -7,18 +7,15 @@
 -- comment by fxengif : there actually has a lot of while loop used so the performance can be badly but you know it fine
 
 do --/* FTF */--
---> created by fxengif <--
 local function c_caller(t, f, cf, ...)
-    return (type(f) == t and (cf and f() or f)) or ...
+    return (type(f) == t and (cf and f())) or ...
 end
-local isluau_ = c_caller("function", isluau, (''), _VERSION)
 local function ReadVMVersion()
-    local ist = type(isluau_)
-    if not ist then return "Error" else if ist == 'boolean' then return 'Luau' elseif ist == 'string' then return isluau_ end end
+    return c_caller("function", isluau, 0) and "Luau" or _VERSION
 end
 local VM_Version = ReadVMVersion()
 local ugc = game or Game
-if not VM_Version:lower():find('luau') and VM_Version ~= 'Error' then ugc.GetService(ugc, 'Players').LocalPlayer:Kick('this game not supported LuaU..(this game still Using Old VM - Lua)') end
+if not VM_Version:lower():find('luau') then ugc.GetService(ugc, 'Players').LocalPlayer:Kick('the current game is not support Luau. (this game are correctly using old LuaVM)') end
 if not ugc:IsLoaded() then
 local s: boolean = pcall(function()
         ugc:Load() -- comment by fxengif : force load if game not load itself
